@@ -155,11 +155,11 @@
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div class="form-group">
           <label class="form-label">Matric number</label>
-          <input class="form-input" type="text" id="login-id" placeholder="e.g. PHA/24/25/0001" autocomplete="username"/>
+          <input class="form-input" type="text" id="login-id" placeholder="e.g. PHA/24/25/0001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input class="form-input" type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password"/>
+          <input class="form-input" type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
           <span class="form-error" id="login-err">Incorrect credentials. Please try again.</span>
         </div>
         <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()">Sign in</button>
@@ -297,10 +297,16 @@
     <p class="quiz-q" id="q-text"></p>
     <div id="q-opts"></div>
     <div class="exp-box" id="q-exp"></div>
-    <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;gap:10px;">
-      <button class="btn btn-primary" id="q-next" onclick="nextQ()" style="display:none;">Next →</button>
-      <button class="btn btn-success" id="q-finish" onclick="finishQuiz()" style="display:none;">Submit & see results</button>
+    <div style="margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <button class="btn" id="q-back" onclick="prevQ()" style="display:none;">← Back</button>
+      <div style="display:flex;gap:10px;margin-left:auto;">
+        <button class="btn btn-primary" id="q-next" onclick="nextQ()" style="display:none;">Next →</button>
+        <button class="btn btn-success" id="q-finish" onclick="finishQuiz()" style="display:none;">Submit & see results</button>
+      </div>
     </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;text-align:right;">
+      Keyboard: <strong>A B C D</strong> to pick · <strong>← →</strong> to navigate · <strong>Enter</strong> to confirm
+    </p>
   </div>
 </div>
 
@@ -1008,6 +1014,53 @@ function showToast(msg,ms=3000){
 }
 
 // ════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ════════════════════════════════════════════
+document.addEventListener('keydown', function(e){
+  const activeScreen = document.querySelector('.screen.active');
+  const screenId = activeScreen ? activeScreen.id : '';
+
+  // ── Login screen: Enter to sign in ──
+  if(screenId === 'screen-login'){
+    if(e.key === 'Enter') doLogin();
+    return;
+  }
+
+  // ── Quiz screen shortcuts ──
+  if(screenId === 'screen-quiz'){
+    const tag = document.activeElement ? document.activeElement.tagName : '';
+    if(tag === 'INPUT' || tag === 'TEXTAREA') return; // don't intercept typing
+
+    const opts = document.querySelectorAll('.option');
+    const numOpts = opts.length;
+
+    // A B C D pick options
+    const keyMap = { 'a':0, 'b':1, 'c':2, 'd':3 };
+    if(e.key.toLowerCase() in keyMap){
+      const idx = keyMap[e.key.toLowerCase()];
+      if(idx < numOpts) pick(idx);
+      return;
+    }
+
+    // Enter or Right arrow → Next / Submit
+    if(e.key === 'Enter' || e.key === 'ArrowRight'){
+      const nextBtn = document.getElementById('q-next');
+      const finBtn  = document.getElementById('q-finish');
+      if(finBtn && finBtn.style.display !== 'none')  finBtn.click();
+      else if(nextBtn && nextBtn.style.display !== 'none') nextBtn.click();
+      return;
+    }
+
+    // Left arrow → Back
+    if(e.key === 'ArrowLeft'){
+      const backBtn = document.getElementById('q-back');
+      if(backBtn && backBtn.style.display !== 'none') backBtn.click();
+      return;
+    }
+  }
+});
+
+// ════════════════════════════════════════════
 // AUTH
 // ════════════════════════════════════════════
 async function doLogin(){
@@ -1232,22 +1285,51 @@ function renderQ(){
   document.getElementById('q-opts').innerHTML = q.opts.map((o,i)=>
     `<div class="option" id="o${i}" onclick="pick(${i})">${String.fromCharCode(65+i)}. ${o}</div>`
   ).join('');
-  document.getElementById('q-next').style.display='none';
-  document.getElementById('q-finish').style.display='none';
+  // Restore previous answer if student came back
+  const prev = answers[curQ];
+  if(prev !== null && prev !== undefined){
+    answered = true;
+    document.querySelectorAll('.option').forEach((el,idx)=>{
+      el.classList.add('locked');
+      if(idx===prev) el.classList.add('selected');
+    });
+    const isLast = curQ===currentQuestions.length-1;
+    document.getElementById('q-next').style.display=(!isLast)?'inline-flex':'none';
+    document.getElementById('q-finish').style.display=isLast?'inline-flex':'none';
+  } else {
+    document.getElementById('q-next').style.display='none';
+    document.getElementById('q-finish').style.display='none';
+  }
+  // Show/hide Back button
+  const backBtn=document.getElementById('q-back');
+  if(backBtn) backBtn.style.display=curQ>0?'inline-flex':'none';
 }
 
 function pick(i){
-  if(answered) return;
-  answered=true; answers[curQ]=i;
+  // Allow changing answer — always reset and re-select
+  answers[curQ]=i;
+  answered=true;
   document.querySelectorAll('.option').forEach((el,idx)=>{
+    el.classList.remove('locked','selected');
     el.classList.add('locked');
     if(idx===i) el.classList.add('selected');
   });
   const isLast=curQ===currentQuestions.length-1;
-  document.getElementById(isLast?'q-finish':'q-next').style.display='inline-flex';
+  document.getElementById('q-next').style.display=(!isLast)?'inline-flex':'none';
+  document.getElementById('q-finish').style.display=isLast?'inline-flex':'none';
+  // Show Back button if not on first question
+  const backBtn=document.getElementById('q-back');
+  if(backBtn) backBtn.style.display=curQ>0?'inline-flex':'none';
 }
 
-function nextQ(){ curQ++; renderQ(); }
+function prevQ(){
+  if(curQ>0){ curQ--; renderQ(); }
+}
+
+function nextQ(){
+  if(!answered){ showToast('Please select an answer first'); return; }
+  curQ++; renderQ();
+}
 
 async function finishQuiz(){
   let correct=0;
