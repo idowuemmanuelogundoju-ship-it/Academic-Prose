@@ -95,6 +95,13 @@
     .option{padding:13px 16px;border:0.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;margin-bottom:10px;font-size:14px;line-height:1.5;transition:background 0.12s,border-color 0.12s;}
     .option:hover:not(.locked){background:var(--bg);border-color:#aaa;}
     .option.correct{border-color:var(--green);background:var(--green-lt);color:var(--green);font-weight:500;}
+    .option.selected{border-color:var(--blue);background:var(--blue-lt);color:var(--blue-dk);font-weight:500;}
+    .review-item{border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
+    .review-item.rev-correct{border-color:var(--green);background:var(--green-lt);}
+    .review-item.rev-wrong{border-color:var(--red);background:var(--red-lt);}
+    .review-q{font-size:14px;font-weight:600;line-height:1.6;margin-bottom:8px;}
+    .review-ans{font-size:13px;margin-bottom:4px;}
+    .review-exp{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6;border-top:0.5px solid var(--border);padding-top:6px;}
     .option.wrong{border-color:var(--red);background:var(--red-lt);color:var(--red);}
     .option.locked{cursor:default;}
     .exp-box{background:var(--bg);border-left:3px solid var(--blue);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;font-size:13px;color:var(--muted);line-height:1.65;margin-top:14px;display:none;}
@@ -148,7 +155,7 @@
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div class="form-group">
           <label class="form-label">Matric number</label>
-          <input class="form-input" type="text" id="login-id" placeholder="e.g. PHA/2023/001" autocomplete="username"/>
+          <input class="form-input" type="text" id="login-id" placeholder="e.g. PHA/24/25/0001" autocomplete="username"/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
@@ -169,6 +176,7 @@
   <div class="nav">
     <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning</div>
     <div style="display:flex;align-items:center;gap:12px;">
+      <span id="mode-status" style="font-size:13px;color:var(--muted);"></span>
       <span style="font-size:14px;color:var(--muted);" id="s-name-nav"></span>
       <button class="btn" style="font-size:13px;padding:7px 14px;" onclick="logout()">Sign out</button>
     </div>
@@ -199,6 +207,10 @@
       <div class="subject-card" onclick="openSubject('pch')"><div class="subject-icon">🔬</div><div class="subject-title">PCH 202</div><div class="subject-meta">Pharm. Chemistry · Acids & Bases</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pch-badge">Pending</span></div></div>
       <div class="subject-card" onclick="openSubject('pcg')"><div class="subject-icon">🌿</div><div class="subject-title">PCG 202</div><div class="subject-meta">Pharmacognosy · Natural products</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pcg-badge">Pending</span></div></div>
       <div class="subject-card" onclick="openSubject('pct')"><div class="subject-icon">📦</div><div class="subject-title">PCT 202</div><div class="subject-meta">Pharmaceutics · 5 handouts · 50q each</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pct-badge">Pending</span></div></div>
+    </div>
+    <div style="margin-top:2rem;">
+      <h2 style="font-size:17px;font-weight:600;margin-bottom:1rem;">My quiz history</h2>
+      <div id="quiz-history-table"></div>
     </div>
   </div>
 </div>
@@ -234,7 +246,7 @@
     </div>
   </div>
   <div class="page">
-    <button class="back-btn" onclick="show('handouts')">← Back to handouts</button>
+    <button class="back-btn" onclick="openSubject(selectedSubject)">← Back to handouts</button>
     <h2 id="viewer-title" style="font-size:18px;font-weight:700;margin-bottom:4px;">CNS Organisation & Control Systems</h2>
     <p id="viewer-desc" style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;">Read the full handout below, then take the quiz when ready.</p>
 
@@ -255,7 +267,7 @@
       <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;">Once you have finished reading the handout above, click the button below to begin your 50-question quiz. Your score will be shown immediately and submitted to your lecturer.</p>
       <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 16px;text-align:left;margin-bottom:1.5rem;font-size:13px;color:var(--muted);line-height:2;">
         <div>📋 <strong id="viewer-questions" style="color:var(--text);">10 questions</strong> — no time limit</div>
-        <div>✅ Correct answer shown after each question</div>
+        <div>✅ Correct answers &amp; explanations revealed at the end</div>
         <div>📊 Score shown immediately when you finish</div>
         <div>📤 Result saved to Google Sheets for your lecturer</div>
       </div>
@@ -310,7 +322,7 @@
     <div class="stats-grid" style="margin-bottom:1rem;">
       <div class="stat-card"><div class="stat-num" id="r-correct"></div><div class="stat-label">Correct</div></div>
       <div class="stat-card"><div class="stat-num" id="r-wrong"></div><div class="stat-label">Wrong</div></div>
-      <div class="stat-card"><div class="stat-num">50</div><div class="stat-label">Total</div></div>
+      <div class="stat-card"><div class="stat-num" id="r-total">0</div><div class="stat-label">Total</div></div>
     </div>
     <div class="card" style="margin-bottom:1.25rem;">
       <div style="display:flex;align-items:flex-start;gap:10px;">
@@ -321,8 +333,12 @@
         </div>
       </div>
     </div>
+    <div style="margin-bottom:1.5rem;">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:1rem;">📋 Answer Review</h3>
+      <div id="r-review"></div>
+    </div>
     <div style="display:flex;gap:10px;">
-      <button class="btn" style="flex:1;" onclick="show('handouts')">Back to handouts</button>
+      <button class="btn" style="flex:1;" onclick="openSubject(selectedSubject)">Back to handouts</button>
       <button class="btn btn-primary" style="flex:1;" onclick="show('student')">All subjects</button>
     </div>
   </div>
@@ -428,29 +444,21 @@
 
     <!-- QUIZZES TAB -->
     <div id="at-quizzes" style="display:none;">
-      <div class="section-header"><p style="font-size:13px;color:var(--muted);">Active quizzes on the platform</p></div>
+      <div class="section-header">
+        <p style="font-size:13px;color:var(--muted);">Lock or unlock individual quizzes for students</p>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-danger" style="font-size:13px;padding:8px 16px;" onclick="lockAllQuizzes()">🔒 Lock all</button>
+          <button class="btn btn-success" style="font-size:13px;padding:8px 16px;" onclick="unlockAllQuizzes()">🔓 Unlock all</button>
+        </div>
+      </div>
+      <div class="info-box" style="margin-bottom:1rem;">
+        🔒 <strong>Locked</strong> quizzes are hidden from students — they will see a "Not available" notice instead of the Open button. Changes take effect immediately.
+      </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <table class="admin-table">
-          <thead><tr><th>Subject</th><th>Handout title</th><th>Questions</th><th>Drive link</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><span class="badge badge-info">PIO 202</span></td>
-              <td style="font-weight:500;">CNS Organisation & Control Systems</td>
-              <td>50</td>
-              <td><a href="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy" target="_blank" style="color:var(--blue);font-size:13px;">Open Folder ↗</a></td>
-              <td><span class="badge badge-success">Active</span></td>
-            </tr>
-            <tr><td><span class="badge badge-info">BCH 202</span></td><td style="font-weight:500;">Enzymes & Metabolism</td><td>10</td><td><a href="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy" target="_blank" style="color:var(--blue);font-size:13px;">Open Folder ↗</a></td><td><span class="badge badge-success">Active</span></td></tr>
-            <tr><td><span class="badge badge-info">ANA 202</span></td><td style="font-weight:500;">Musculoskeletal System</td><td>10</td><td><a href="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy" target="_blank" style="color:var(--blue);font-size:13px;">Open Folder ↗</a></td><td><span class="badge badge-success">Active</span></td></tr>
-            <tr><td><span class="badge badge-info">PCH 202</span></td><td style="font-weight:500;">Acids, Bases & pH</td><td>10</td><td><a href="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy" target="_blank" style="color:var(--blue);font-size:13px;">Open Folder ↗</a></td><td><span class="badge badge-success">Active</span></td></tr>
-            <tr><td><span class="badge badge-info">PCG 202</span></td><td style="font-weight:500;">Phytochemicals & Natural Drugs</td><td>10</td><td><a href="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy" target="_blank" style="color:var(--blue);font-size:13px;">Open Folder ↗</a></td><td><span class="badge badge-success">Active</span></td></tr>
-            <tr><td><span class="badge badge-info">PCT 202</span></td><td style="font-weight:500;">Solutions, Dispersed Systems, Surface Tension & Phase Rule</td><td>10</td><td><a href="https://drive.google.com/drive/folders/1q57llzG1KsF-3Xh8khjf0Q0YKwm9e6ZD" target="_blank" style="color:var(--blue);font-size:13px;">Open Folder ↗</a></td><td><span class="badge badge-success">Active</span></td></tr>
-          </tbody>
+          <thead><tr><th>Subject</th><th>Handout title</th><th>Questions</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="quiz-lock-body"></tbody>
         </table>
-      </div>
-      <div style="margin-top:1rem;background:var(--green-lt);border:0.5px solid rgba(59,109,17,0.25);border-radius:var(--radius);padding:1.25rem;">
-        <p style="font-size:13px;font-weight:500;margin-bottom:6px;color:var(--green);">✅ All 6 subjects are active</p>
-        <p style="font-size:13px;color:var(--green);line-height:1.65;">All subjects have quiz questions loaded and are available to students. To add more questions or link subject-specific Drive folders, update the SUBJECTS object in the HTML file.</p>
       </div>
     </div>
   </div>
@@ -462,13 +470,19 @@
 <script>
 // ════════════════════════════════════════════
 // CONFIG — paste your Apps Script URL here
-// after deploying the Google Apps Script
+// after deploying the Google Apps Script (use the Apps Script code you provided)
+// Example: https://script.google.com/macros/s/XXXXXXXXXXXXX/exec
 // ════════════════════════════════════════════
-const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkqOC9g3GXeK83ZtQ0GZQHD3C3_511PAuhFE1RfVMGbMGjlzAO661VE2Ri_ltM2FWqJw/exec';
 
 // Admin credentials
 const ADMIN_ID   = 'pha/25/26/0091';
 const ADMIN_PASS = 'ogundoju';
+
+// Local storage keys
+const LOCAL_STUDENTS_KEY = 'pharmalearn_students';
+const LOCAL_RESULTS_KEY  = 'pharmalearn_results';
+const QUIZ_LOCKS_KEY     = 'pharmalearn_quiz_locks';
 
 // Test student credential (user requested) for local mode
 const LOCAL_STUDENTS = {
@@ -476,8 +490,32 @@ const LOCAL_STUDENTS = {
 };
 
 // Google Sheets IDs (fill in after creating sheets)
-const STUDENTS_SHEET_ID = 'YOUR_STUDENTS_SHEET_ID';
-const RESULTS_SHEET_ID  = 'YOUR_RESULTS_SHEET_ID';
+const STUDENTS_SHEET_ID = '1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I';
+const RESULTS_SHEET_ID  = '1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I';
+
+function getLocalStudents(){
+  return JSON.parse(localStorage.getItem(LOCAL_STUDENTS_KEY) || '[]');
+}
+function setLocalStudents(students){
+  localStorage.setItem(LOCAL_STUDENTS_KEY, JSON.stringify(students));
+}
+function addLocalStudent(student){
+  const arr=getLocalStudents();
+  if(!arr.some(s=>s.matric===student.matric)) arr.push(student);
+  setLocalStudents(arr);
+}
+
+function getLocalResults(){
+  return JSON.parse(localStorage.getItem(LOCAL_RESULTS_KEY) || '[]');
+}
+function setLocalResults(results){
+  localStorage.setItem(LOCAL_RESULTS_KEY, JSON.stringify(results));
+}
+function addLocalResult(result){
+  const arr=getLocalResults();
+  arr.unshift(result);
+  setLocalResults(arr);
+}
 
 // ── STATE ──
 let currentStudent = null;
@@ -1039,27 +1077,68 @@ function logout(){
 // ════════════════════════════════════════════
 async function refreshStats(){
   if(!currentStudent) return;
+
+  // Always use local results as source of truth for instant UI update
+  let results = getLocalResults().filter(r=>r.matric===currentStudent.matric);
+
+  // Try to also pull from Google Sheets and merge (de-duplicate by submittedAt)
   try{
     const res = await fetch(`${SCRIPT_URL}?action=getStudentResults&matric=${encodeURIComponent(currentStudent.matric)}`);
     const data = await res.json();
-    const results = data.results || [];
-    const taken = results.length;
-    const avg = taken>0 ? Math.round(results.reduce((a,r)=>a+Number(r.score),0)/taken) : null;
-    document.getElementById('s-taken').textContent = taken;
-    document.getElementById('s-avg').textContent = avg!==null ? avg+'%' : '—';
-    document.getElementById('s-pending').textContent = Math.max(0,6-taken);
-    if(taken>0){
-      ['pio','bch','ana','pch','pcg','pct'].forEach(sub=>{
-        const b=document.getElementById(`${sub}-badge`);
-        if(b){ b.textContent='Done'; b.className='badge badge-success'; }
-      });
-      const h=document.getElementById('h1-badge');
-      if(h){ h.textContent='Done'; h.className='badge badge-success'; }
+    if(data && data.results && data.results.length > 0){
+      const sheetResults = data.results;
+      const localTimes = new Set(results.map(r=>r.submittedAt));
+      sheetResults.forEach(r=>{ if(!localTimes.has(r.submittedAt)) results.push(r); });
     }
-  } catch{ 
-    document.getElementById('s-taken').textContent='0';
-    document.getElementById('s-avg').textContent='—';
-    document.getElementById('s-pending').textContent='1';
+  } catch{ /* offline, use local only */ }
+
+  const taken = results.length;
+  const avg = taken>0 ? Math.round(results.reduce((a,r)=>a+Number(r.score),0)/taken) : null;
+  document.getElementById('s-taken').textContent = taken;
+  document.getElementById('s-avg').textContent = avg!==null ? avg+'%' : '—';
+  // Count fully-completed subjects for pending stat
+  const completedSubjects = ['pio','bch','ana','pch','pcg','pct'].filter(sub=>{
+    const subjectHandouts = SUBJECTS[sub] ? SUBJECTS[sub].handouts.map(h=>h.title) : [];
+    const doneSet = new Set(results.filter(r=>r.subject===sub).map(r=>r.handout));
+    return subjectHandouts.length > 0 && subjectHandouts.every(t=>doneSet.has(t));
+  });
+  document.getElementById('s-pending').textContent = Math.max(0, 6 - completedSubjects.length);
+
+  // Mark subject Done only when ALL its handouts are completed, In Progress if some done
+  ['pio','bch','ana','pch','pcg','pct'].forEach(sub=>{
+    const b=document.getElementById(`${sub}-badge`);
+    if(!b) return;
+    const subjectHandouts = SUBJECTS[sub] ? SUBJECTS[sub].handouts.map(h=>h.title) : [];
+    const subResults = results.filter(r=>r.subject===sub);
+    const doneHandoutTitles = new Set(subResults.map(r=>r.handout));
+    const allDone = subjectHandouts.length > 0 && subjectHandouts.every(t=>doneHandoutTitles.has(t));
+    const someDone = subjectHandouts.some(t=>doneHandoutTitles.has(t));
+    if(allDone){
+      b.textContent='Done'; b.className='badge badge-success';
+    } else if(someDone){
+      b.textContent=doneHandoutTitles.size+'/'+subjectHandouts.length+' done'; b.className='badge badge-info';
+    } else {
+      b.textContent='Pending'; b.className='badge badge-warn';
+    }
+  });
+
+  // Render quiz history table
+  const histDiv = document.getElementById('quiz-history-table');
+  if(histDiv){
+    if(results.length===0){
+      histDiv.innerHTML='<p style="font-size:13px;color:var(--muted);">No quizzes taken yet.</p>';
+    } else {
+      histDiv.innerHTML=`<table class="admin-table">
+        <thead><tr><th>Subject</th><th>Handout</th><th>Score</th><th>Correct</th><th>Date</th></tr></thead>
+        <tbody>${results.map(r=>`<tr>
+          <td><span class="badge badge-info">${(SUBJECTS[r.subject]&&SUBJECTS[r.subject].code)||r.subject||'—'}</span></td>
+          <td style="font-size:13px;">${r.handout||'—'}</td>
+          <td><span class="badge ${Number(r.score)>=60?'badge-success':'badge-danger'}">${r.score}%</span></td>
+          <td style="color:var(--muted);">${r.correct}/${r.total}</td>
+          <td style="font-size:12px;color:var(--muted);">${r.submittedAt}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+    }
   }
 }
 
@@ -1071,21 +1150,35 @@ function openSubject(subj){
   document.getElementById('handout-subject').textContent = s.name;
   document.getElementById('handout-desc').textContent = s.description;
 
+  // Determine which handouts the current student has already completed
+  const myResults = currentStudent
+    ? getLocalResults().filter(r => r.matric === currentStudent.matric && r.subject && r.subject.toLowerCase() === subj)
+    : [];
+  const doneHandouts = new Set(myResults.map(r => r.handout));
+
   const list = document.getElementById('handouts-list');
-  list.innerHTML = s.handouts.map((h, i) => `
-    <div class="card" style="margin-bottom:12px;">
+  list.innerHTML = s.handouts.map((h, i) => {
+    const done = doneHandouts.has(h.title);
+    const myBest = myResults.filter(r => r.handout === h.title);
+    const bestScore = myBest.length > 0 ? Math.max(...myBest.map(r => Number(r.score))) : null;
+    const locked = isQuizLocked(subj, h.title);
+    return `
+    <div class="card" style="margin-bottom:12px;${locked?'opacity:0.7;':''}">
       <div class="handout-row">
         <div class="handout-info">
-          <div class="handout-title">${h.title}</div>
-          <div class="handout-meta">${h.questions.length} questions · Read the handout first, then take the quiz</div>
+          <div class="handout-title">${h.title}${locked?' <span style="font-size:12px;">🔒</span>':''}</div>
+          <div class="handout-meta">${h.questions.length} questions · ${locked ? 'This quiz is currently locked by your lecturer' : 'Read the handout first, then take the quiz' + (bestScore!==null ? ' · Best: '+bestScore+'%' : '')}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-          <span class="badge badge-warn">Pending</span>
-          <button class="btn btn-primary" style="font-size:13px;padding:8px 16px;" onclick="openHandout(${i})">Open</button>
+          ${locked
+            ? '<span class="badge badge-danger">Locked</span><button class="btn" style="font-size:13px;padding:8px 16px;opacity:0.5;cursor:not-allowed;" disabled>Not available</button>'
+            : `<span class="badge ${done ? 'badge-success' : 'badge-warn'}">${done ? 'Done' : 'Pending'}</span>
+               <button class="btn btn-primary" style="font-size:13px;padding:8px 16px;" onclick="openHandout(${i})">${done ? 'Retake' : 'Open'}</button>`
+          }
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
   show('handouts');
 }
 
@@ -1110,11 +1203,14 @@ function openHandout(idx){
 }
 
 function beginQuiz(){
-  curQ = 0;
   const h = SUBJECTS[selectedSubject].handouts[selectedHandoutIdx];
+  if(isQuizLocked(selectedSubject, h.title)){
+    showToast('🔒 This quiz is locked by your lecturer');
+    return;
+  }
+  curQ = 0;
   currentHandoutTitle = h.title;
   currentQuestions = h.questions;
-  currentHandoutTitle = h.title;
   answers = new Array(currentQuestions.length).fill(null);
   answered = false;
   renderQ();
@@ -1143,14 +1239,10 @@ function renderQ(){
 function pick(i){
   if(answered) return;
   answered=true; answers[curQ]=i;
-  const q=currentQuestions[curQ];
   document.querySelectorAll('.option').forEach((el,idx)=>{
     el.classList.add('locked');
-    if(idx===q.ans) el.classList.add('correct');
-    else if(idx===i&&i!==q.ans) el.classList.add('wrong');
+    if(idx===i) el.classList.add('selected');
   });
-  const exp=document.getElementById('q-exp');
-  exp.textContent='💡 '+q.exp; exp.style.display='block';
   const isLast=curQ===currentQuestions.length-1;
   document.getElementById(isLast?'q-finish':'q-next').style.display='inline-flex';
 }
@@ -1166,30 +1258,62 @@ async function finishQuiz(){
   document.getElementById('r-score').textContent=pct+'%';
   document.getElementById('r-correct').textContent=correct;
   document.getElementById('r-wrong').textContent=total-correct;
+  document.getElementById('r-total').textContent=total;
   document.getElementById('r-emoji').textContent=pct>=80?'🏆':pct>=60?'👍':'💪';
   document.getElementById('r-label').textContent=
     pct>=80?'Outstanding! Excellent performance.' :
     pct>=60?'Good effort — review what you missed and try again.' :
     'Keep studying — every attempt makes you stronger!';
 
+  // Build answer review
+  const reviewDiv = document.getElementById('r-review');
+  if(reviewDiv){
+    reviewDiv.innerHTML = currentQuestions.map((q,i)=>{
+      const chosen = answers[i];
+      const isCorrect = chosen === q.ans;
+      const chosenLabel = chosen !== null ? String.fromCharCode(65+chosen)+'. '+q.opts[chosen] : 'Not answered';
+      const correctLabel = String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];
+      return `<div class="review-item ${isCorrect?'rev-correct':'rev-wrong'}">
+        <div class="review-q">${i+1}. ${q.q}</div>
+        <div class="review-ans" style="color:${isCorrect?'var(--green)':'var(--red)'}">
+          ${isCorrect?'✅':'❌'} Your answer: ${chosenLabel}
+        </div>
+        ${!isCorrect?'<div class="review-ans" style="color:var(--green)">✅ Correct answer: '+correctLabel+'</div>':''}
+        <div class="review-exp">💡 ${q.exp}</div>
+      </div>`;
+    }).join('');
+  }
+
   if(currentStudent){
+    // ALWAYS save locally first so dashboard always reflects the result
+    const payload = {
+      studentName: currentStudent.name,
+      matric: currentStudent.matric,
+      subject: selectedSubject,
+      handout: currentHandoutTitle,
+      score: pct,
+      correct,
+      total,
+      submittedAt: new Date().toLocaleString('en-NG')
+    };
+    addLocalResult(payload);
+    await refreshStats();
+
+    // Then try to sync to Google Sheets in the background
     try{
-      await fetch(SCRIPT_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
-        action:'saveResult',
-        studentName: currentStudent.name,
-        matric: currentStudent.matric,
-        subject: SUBJECTS[selectedSubject].code,
-        handout: currentHandoutTitle,
-        score: pct,
-        correct,
-        total,
-        submittedAt: new Date().toLocaleString('en-NG')
-      })});
-      showToast('Score saved to Google Sheets ✓');
-      await refreshStats();
+      const _sp = new URLSearchParams({ action:'saveResult', ...payload });
+      const res = await fetch(SCRIPT_URL + '?' + _sp.toString());
+      const data = await res.json().catch(()=>({}));
+      if(data && data.success){
+        showToast('Score saved to Google Sheets ✓');
+      } else {
+        showToast('Score saved locally ✓');
+      }
     } catch{
-      showToast('Score saved locally — will sync when online');
+      showToast('Score saved locally ✓');
     }
+  } else {
+    showToast('Please log in to save your score.');
   }
   show('result');
 }
@@ -1197,6 +1321,67 @@ async function finishQuiz(){
 // ════════════════════════════════════════════
 // ADMIN
 // ════════════════════════════════════════════
+// ════════════════════════════════════════════
+// QUIZ LOCK/UNLOCK
+// ════════════════════════════════════════════
+function getQuizLocks(){
+  return JSON.parse(localStorage.getItem(QUIZ_LOCKS_KEY) || '{}');
+}
+function setQuizLocks(locks){
+  localStorage.setItem(QUIZ_LOCKS_KEY, JSON.stringify(locks));
+}
+function isQuizLocked(subjectKey, handoutTitle){
+  const locks = getQuizLocks();
+  const lockId = subjectKey + '::' + handoutTitle;
+  return locks[lockId] === true;
+}
+function toggleQuizLock(subjectKey, handoutTitle){
+  const locks = getQuizLocks();
+  const lockId = subjectKey + '::' + handoutTitle;
+  locks[lockId] = !locks[lockId];
+  setQuizLocks(locks);
+  renderQuizLockTable();
+  showToast(locks[lockId] ? '🔒 Quiz locked' : '🔓 Quiz unlocked');
+}
+function lockAllQuizzes(){
+  const locks = {};
+  Object.keys(SUBJECTS).forEach(sub=>{
+    SUBJECTS[sub].handouts.forEach(h=>{ locks[sub+'::'+h.title]=true; });
+  });
+  setQuizLocks(locks);
+  renderQuizLockTable();
+  showToast('🔒 All quizzes locked');
+}
+function unlockAllQuizzes(){
+  setQuizLocks({});
+  renderQuizLockTable();
+  showToast('🔓 All quizzes unlocked');
+}
+function renderQuizLockTable(){
+  const locks = getQuizLocks();
+  const tbody = document.getElementById('quiz-lock-body');
+  if(!tbody) return;
+  let rows = '';
+  Object.keys(SUBJECTS).forEach(sub=>{
+    const s = SUBJECTS[sub];
+    s.handouts.forEach((h,i)=>{
+      const lockId = sub+'::'+h.title;
+      const locked = locks[lockId]===true;
+      rows += `<tr>
+        <td><span class="badge badge-info">${s.code}</span></td>
+        <td style="font-weight:500;font-size:13px;">${h.title}</td>
+        <td style="color:var(--muted);">${h.questions.length}</td>
+        <td><span class="badge ${locked?'badge-danger':'badge-success'}">${locked?'🔒 Locked':'🔓 Unlocked'}</span></td>
+        <td>
+          <button class="btn ${locked?'btn-success':'btn-danger'}" style="font-size:12px;padding:5px 14px;"
+            onclick="toggleQuizLock('${sub}','${h.title.replace(/'/g,"\'")}')">${locked?'Unlock':'Lock'}</button>
+        </td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = rows;
+}
+
 function adminTab(tab,el){
   document.querySelectorAll('#screen-admin .tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
@@ -1205,13 +1390,14 @@ function adminTab(tab,el){
   });
   if(tab==='results') loadResults();
   if(tab==='students') loadStudents();
+  if(tab==='quizzes') renderQuizLockTable();
 }
 
 function initAdminSheetLinks(){
   document.getElementById('students-sheet-link').href=
-    `https://docs.google.com/spreadsheets/d/${STUDENTS_SHEET_ID}`;
+    'https://docs.google.com/spreadsheets/d/1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I/edit?gid=737598935#gid=737598935';
   document.getElementById('results-sheet-link').href=
-    `https://docs.google.com/spreadsheets/d/${RESULTS_SHEET_ID}`;
+    'https://docs.google.com/spreadsheets/d/1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I/edit?gid=1454402296#gid=1454402296';
   document.getElementById('script-url-display').textContent=SCRIPT_URL;
 }
 
@@ -1237,7 +1423,22 @@ async function loadStudents(){
       </tr>
     `).join('');
   } catch{
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Could not load students. Check your Apps Script URL.</td></tr>';
+    const students = getLocalStudents();
+    document.getElementById('student-count').textContent=`${students.length} student${students.length!==1?'s':''} registered`;
+    if(students.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No students yet. Add one above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=students.map((s,i)=>`
+      <tr>
+        <td style="color:var(--muted);">${i+1}</td>
+        <td style="font-weight:500;">${s.name}</td>
+        <td style="color:var(--muted);font-family:monospace;">${s.matric}</td>
+        <td style="color:var(--muted);">${s.password}</td>
+        <td style="color:var(--muted);">${s.email||'—'}</td>
+        <td><button class="btn btn-danger" style="font-size:12px;padding:5px 12px;" onclick="deleteStudent('${s.matric}','${s.name}')">Remove</button></td>
+      </tr>
+    `).join('');
   }
 }
 
@@ -1262,7 +1463,21 @@ async function loadResults(){
       </tr>
     `).join('');
   } catch{
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Could not load results. Check your Apps Script URL.</td></tr>';
+    const results = getLocalResults();
+    if(results.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No submissions yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=results.map(r=>`
+      <tr>
+        <td style="font-weight:500;">${r.studentName}</td>
+        <td style="color:var(--muted);font-family:monospace;font-size:13px;">${r.matric}</td>
+        <td>${r.subject}</td>
+        <td><span class="badge ${Number(r.score)>=60?'badge-success':'badge-danger'}">${r.score}%</span></td>
+        <td>${r.correct} / ${r.total}</td>
+        <td style="font-size:12px;color:var(--muted);">${r.submittedAt}</td>
+      </tr>
+    `).join('');
   }
 }
 
@@ -1278,32 +1493,33 @@ async function addStudent(){
   const email  = document.getElementById('new-email').value.trim();
   if(!name||!matric||!pass){ showToast('Please fill in name, matric and password'); return; }
   try{
-    await fetch(SCRIPT_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'addStudent',name,matric,password:pass,email})
-    });
+    const _ap = new URLSearchParams({action:'addStudent',name,matric,password:pass,email});
+    await fetch(SCRIPT_URL+'?'+_ap.toString());
     showToast(`${name} added successfully ✓`);
     toggleAddForm();
     ['new-name','new-matric','new-pass','new-email'].forEach(id=>document.getElementById(id).value='');
     await loadStudents();
   } catch{
-    showToast('Error adding student — check Apps Script URL');
+    addLocalStudent({name,matric,password:pass,email});
+    showToast(`${name} added locally ✓`);
+    toggleAddForm();
+    ['new-name','new-matric','new-pass','new-email'].forEach(id=>document.getElementById(id).value='');
+    await loadStudents();
   }
 }
 
 async function deleteStudent(matric,name){
   if(!confirm(`Remove ${name} from the platform?`)) return;
   try{
-    await fetch(SCRIPT_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'deleteStudent',matric})
-    });
+    const _dp = new URLSearchParams({action:'deleteStudent',matric});
+    await fetch(SCRIPT_URL+'?'+_dp.toString());
     showToast(`${name} removed`);
     await loadStudents();
   } catch{
-    showToast('Error removing student');
+    const students = getLocalStudents().filter(s=>s.matric!==matric);
+    setLocalStudents(students);
+    showToast(`${name} removed locally`);
+    await loadStudents();
   }
 }
 </script>

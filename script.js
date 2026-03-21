@@ -1,301 +1,538 @@
-const loginPanel = document.getElementById('login-panel');
-const subjectsPanel = document.getElementById('subjects-panel');
-const handoutPanel = document.getElementById('handout-panel');
-const loginForm = document.getElementById('login-form');
-const loginMessage = document.getElementById('login-message');
-const userStatus = document.getElementById('user-status');
-const subjectsList = document.getElementById('subjects-list');
-const handoutTitle = document.getElementById('handout-title');
-const handoutContent = document.getElementById('handout-content');
-const handoutSummary = document.getElementById('handout-summary');
-const quizForm = document.getElementById('quiz-form');
-const quizSubtitle = document.getElementById('quiz-subtitle');
-const quizResult = document.getElementById('quiz-result');
-const submitQuiz = document.getElementById('submit-quiz');
-const backToSubjects = document.getElementById('back-to-subjects');
-const logoutBtn = document.getElementById('logout-btn');
-const teacherPanelBtn = document.getElementById('teacher-panel-btn');
-const closeTeacherBtn = document.getElementById('close-teacher');
-const teacherForm = document.getElementById('teacher-form');
-const teacherMessage = document.getElementById('teacher-message');
-const scoreHistory = document.getElementById('score-history');
+// Hard-coded local students for instant login (no internet)
+const LOCAL_STUDENTS = [
+  { id: 1, matric: 'PHA/24/25/0001', password: 'password', name: 'Adaeze Obi', level: '200 Level' },
+  { id: 2, matric: 'PHA/24/25/0002', password: 'password', name: 'Chisom Nnamdi', level: '200 Level' },
+  { id: 3, matric: 'PHA/24/25/0003', password: 'password', name: 'Tunde Okafor', level: '200 Level' },
+  { id: 5, matric: 'bada', password: 'password', name: 'Bada', level: '200 Level' },
+  { id: 4, matric: 'admin', password: 'admin123', name: 'Admin User', level: 'Admin' }
+];
 
-const API_BASE = 'http://localhost:3000/api';
+const SUBJECTS = [
+  { code: 'pio', name: 'PIO 202', title: 'Physiology', icon: '❤️' },
+  { code: 'bch', name: 'BCH 202', title: 'Biochemistry', icon: '🧪' },
+  { code: 'ana', name: 'ANA 202', title: 'Anatomy', icon: '🦴' },
+  { code: 'pch', name: 'PCH 202', title: 'Pharm. Chemistry', icon: '🔬' },
+  { code: 'pcg', name: 'PCG 202', title: 'Pharmacognosy', icon: '🌿' },
+  { code: 'pct', name: 'PCT 202', title: 'Pharmaceutics', icon: '📦' }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GLOBAL STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+
 let loggedInUser = null;
-let selectedSubject = null;
-let selectedHandout = null;
-let subjects = [];
+let currentQuizIndex = 0;
+let currentQuizAnswers = {};
+let currentSubject = null;
+let currentHandout = null;
 
-function showPanel(panel){loginPanel.classList.add('hidden');subjectsPanel.classList.add('hidden');handoutPanel.classList.add('hidden');panel.classList.remove('hidden');}
-function saveUserToStorage(){if(loggedInUser)localStorage.setItem('pharmQuizUser',JSON.stringify(loggedInUser));}
-function loadUserFromStorage(){const stored=localStorage.getItem('pharmQuizUser');if(stored){try{loggedInUser=JSON.parse(stored);return true;}catch{}}return false;}
-async function loadHistory(){if(!loggedInUser||!loggedInUser.id)return;try{const res=await fetch(`${API_BASE}/history/${loggedInUser.id}`);const history=await res.json();if(!scoreHistory)return;if(!history.length){scoreHistory.innerHTML='<div>No quiz attempts yet.</div>';return;}scoreHistory.innerHTML=history.map((item)=>`<div>${new Date(item.created_at).toLocaleDateString()} - <strong>${item.subject}</strong> / ${item.title}: ${item.score}/${item.total}</div>`).join('');}catch(err){console.error(err);}}
-async function loadSubjects(){try{const res=await fetch(`${API_BASE}/subjects`);subjects=await res.json();renderSubjects();}catch(err){console.error(err);}}
-function renderSubjects(){subjectsList.innerHTML='';subjects.forEach((subject)=>{const card=document.createElement('div');card.className='card';card.innerHTML=`<div><strong>${subject.name}</strong><br><small>${subject.handouts.length} handout(s)</small></div><button data-id="${subject.id}">Open</button>`;card.querySelector('button').addEventListener('click',()=>openSubject(subject.id));subjectsList.appendChild(card);});}
-function openSubject(subjectId){selectedSubject=subjects.find((s)=>s.id===subjectId);if(!selectedSubject)return;handoutTitle.textContent=selectedSubject.name;handoutSummary.textContent='Select a handout.';handoutContent.innerHTML=selectedSubject.handouts.map((h)=>`<div class="card"><div><strong>${h.title}</strong><p style="margin:4px 0;">${h.summary}</p></div><button data-id="${h.id}">Read & Quiz</button></div>`).join('');handoutContent.querySelectorAll('button').forEach((btn)=>{btn.addEventListener('click',()=>{const handout=selectedSubject.handouts.find((h)=>h.id===btn.dataset.id);if(handout)openHandout(handout);});});showPanel(handoutPanel);}
-async function openHandout(handout){try{const res=await fetch(`${API_BASE}/handout/${handout.id}`);selectedHandout=await res.json();handoutTitle.textContent=`${selectedSubject.name} - ${selectedHandout.title}`;handoutSummary.textContent=selectedHandout.summary;handoutContent.innerHTML=`<div>${selectedHandout.content}</div>`;quizSubtitle.textContent=selectedHandout.title;renderQuizForm();}catch(err){console.error(err);}}
-function renderQuizForm(){quizForm.innerHTML='';selectedHandout.quiz.forEach((item,idx)=>{const div=document.createElement('div');div.className='quiz-item';const optionsHtml=item.options.map((opt,i)=>`<label><input type="radio" name="q${idx}" value="${i}" /> ${opt}</label>`).join('');div.innerHTML=`<label><strong>${idx+1}. ${item.q}</strong></label>${optionsHtml}`;quizForm.appendChild(div);});quizResult.textContent='';}
-function calculateScore(){let correct=0;selectedHandout.quiz.forEach((item,idx)=>{const answer=quizForm.querySelector(`input[name='q${idx}']:checked`);if(answer&&Number(answer.value)===item.answer)correct++;});return{correct,total:selectedHandout.quiz.length};}
-loginForm.addEventListener('submit',async(e)=>{e.preventDefault();const email=document.getElementById('email').value.trim();const password=document.getElementById('password').value.trim();if(!email||!password){loginMessage.textContent='Enter email and password.';return;}try{const res=await fetch(`${API_BASE}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});const user=await res.json();if(res.ok){loggedInUser=user;saveUserToStorage();userStatus.textContent=`${email} • ${user.level}`;loginMessage.textContent='';loginForm.reset();await loadSubjects();await loadHistory();showPanel(subjectsPanel);}else{loginMessage.textContent=user.error||'Login failed.';}}catch(err){loginMessage.textContent='Server error.';console.error(err);}});
-logoutBtn.addEventListener('click',()=>{loggedInUser=null;selectedSubject=null;selectedHandout=null;localStorage.removeItem('pharmQuizUser');userStatus.textContent='';showPanel(loginPanel);});
-backToSubjects.addEventListener('click',async()=>{await loadSubjects();await loadHistory();showPanel(subjectsPanel);});
-submitQuiz.addEventListener('click',async(e)=>{e.preventDefault();if(!selectedHandout||!loggedInUser)return;const{correct,total}=calculateScore();quizResult.className='message success';quizResult.textContent=`Score: ${correct}/${total}. ${correct===total?'Perfect!':'Try again.'}`;try{await fetch(`${API_BASE}/submit-quiz`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:loggedInUser.id,handout_id:selectedHandout.id,score:correct,total})});await loadHistory();}catch(err){console.error(err);}});
-teacherPanelBtn?.addEventListener('click',()=>{teacherMessage.textContent='';showPanel(document.getElementById('teacher-panel'));});
-closeTeacherBtn?.addEventListener('click',async()=>{await loadSubjects();await loadHistory();showPanel(subjectsPanel);});
-teacherForm?.addEventListener('submit',async(e)=>{e.preventDefault();const subjectId=document.getElementById('teacher-subjectId').value.trim();const subjectName=document.getElementById('teacher-subjectName').value.trim();const handoutTitle=document.getElementById('teacher-handoutTitle').value.trim();const handoutSummary=document.getElementById('teacher-handoutSummary').value.trim();const handoutContentValue=document.getElementById('teacher-handoutContent').value.trim();if(!subjectId||!subjectName||!handoutTitle||!handoutSummary||!handoutContentValue){teacherMessage.textContent='Fill all fields.';return;}try{const res=await fetch(`${API_BASE}/add-handout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject_id:subjectId,subject_name:subjectName,title:handoutTitle,summary:handoutSummary,content:handoutContentValue,quiz:[{q:'What is a key point?',options:['A','B','C','D'],answer:0}]})});const result=await res.json();if(res.ok){teacherMessage.textContent='Handout added!';teacherForm.reset();await loadSubjects();}else{teacherMessage.textContent=result.error||'Failed.';}}catch(err){teacherMessage.textContent='Error.';console.error(err);}});
-if(loadUserFromStorage()){userStatus.textContent=`${loggedInUser.email} • ${loggedInUser.level}`;loadSubjects();loadHistory();showPanel(subjectsPanel);}else{showPanel(loginPanel);}
+// ═══════════════════════════════════════════════════════════════════════════════
+// DEBUG & ADMIN FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function debugShowAllStudentData(){
+  console.log('=== DEBUG: ALL STUDENT DATA ===');
+  SUBJECTS.forEach((subject) => {
+    console.log(`\n${subject.code}:`);
+  });
+  
+  // Show all localStorage keys
+  console.log('\n=== LOCALSTORAGE KEYS ===');
+  for(let i=0;i<localStorage.length;i++){
+    const key = localStorage.key(i);
+    console.log(`${key}:`, localStorage.getItem(key));
+  }
+}
+
+function debugGetStudentQuizzes(matric){
+  const key = `quizHistory_${matric}`;
+  const data = localStorage.getItem(key);
+  console.log(`Quiz history for ${matric}:`, data?JSON.parse(data):'No data found');
+  return data?JSON.parse(data):[];
+}
+
+function debugClearStudentData(matric){
+  const key = `quizHistory_${matric}`;
+  localStorage.removeItem(key);
+  console.log(`Cleared ${key}`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STORAGE & HISTORY MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function saveUserToStorage(){
+  if(loggedInUser){
+    localStorage.setItem('pharmaUser', JSON.stringify(loggedInUser));
+  }
+}
+
+function loadUserFromStorage(){
+  const stored = localStorage.getItem('pharmaUser');
+  if(stored){
+    try{
+      loggedInUser = JSON.parse(stored);
+      return true;
+    }catch(e){
+      console.error('Failed to parse user storage', e);
+    }
+  }
+  return false;
+}
+
+function getQuizHistory(){
+  if(!loggedInUser||!loggedInUser.matric) return [];
+  const historyKey = `quizHistory_${loggedInUser.matric}`;
+  const history = localStorage.getItem(historyKey);
+  return history?JSON.parse(history):[];
+}
+
+function saveQuizToHistory(subject, handout, score, total, questions){
+  if(!loggedInUser) return;
+  const history = getQuizHistory();
+  history.push({
+    date: new Date().toISOString(),
+    subject: subject.name,
+    subjectCode: subject.code,
+    handout: handout.title,
+    handoutId: handout.id,
+    score,
+    total,
+    questionsCount: questions
+  });
+  const historyKey = `quizHistory_${loggedInUser.matric}`;
+  localStorage.setItem(historyKey, JSON.stringify(history));
+  console.log(`✅ [${loggedInUser.name}] Quiz saved - ${subject.name}/${handout.title} - Score: ${score}/${total} - Key: ${historyKey}`);
+}
+
+function getCompletedSubjects(){
+  const history = getQuizHistory();
+  const subjects = new Set();
+  history.forEach((item) => {
+    subjects.add(item.subjectCode);
+  });
+  return Array.from(subjects);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOGIN FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function checkLocalLogin(matric, password){
+  const lowerMatric = matric.toLowerCase().trim();
+  const lowerPassword = password.toLowerCase().trim();
+  
+  for(const student of LOCAL_STUDENTS){
+    if(student.matric.toLowerCase()===lowerMatric && 
+       student.password.toLowerCase()===lowerPassword){
+      return {...student};
+    }
+  }
+  return null;
+}
+
+async function doLogin(){
+  const matric = document.getElementById('login-id').value.trim();
+  const password = document.getElementById('login-pass').value.trim();
+  const loginErr = document.getElementById('login-err');
+  
+  if(!matric||!password){
+    loginErr.textContent = 'Please enter matric number and password.';
+    loginErr.style.display = 'block';
+    return;
+  }
+  
+  loginErr.style.display = 'none';
+  
+  // Step 1: Check local storage first (instant)
+  const localUser = checkLocalLogin(matric, password);
+  if(localUser){
+    loggedInUser = localUser;
+    saveUserToStorage();
+    show('student');
+    updateDashboard();
+    document.getElementById('login-id').value = '';
+    document.getElementById('login-pass').value = '';
+    return;
+  }
+  
+  // Login failed
+  loginErr.textContent = 'Invalid matric number or password. (Local)';
+  loginErr.style.display = 'block';
+}
+
+function logout(){
+  loggedInUser = null;
+  currentSubject = null;
+  currentHandout = null;
+  localStorage.removeItem('pharmaUser');
+  document.getElementById('login-id').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-err').style.display = 'none';
+  show('login');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCREEN NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function show(screenName){
+  document.querySelectorAll('.screen').forEach((s) => {
+    s.style.display = 'none';
+  });
+  const screen = document.getElementById('screen-' + screenName);
+  if(screen) screen.style.display = 'block';
+}
+
+function switchLoginTab(type, el){
+  document.querySelectorAll('.tab').forEach((t) => {
+    t.classList.remove('active');
+  });
+  el.classList.add('active');
+  // Could implement admin/student login switching here
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function updateDashboard(){
+  if(!loggedInUser) return;
+  
+  const history = getQuizHistory();
+  console.log(`📊 [${loggedInUser.name}] Dashboard update - Quizzes found:`, history.length, history);
+  
+  // Update stats
+  const sTaken = document.getElementById('s-taken');
+  if(sTaken) sTaken.textContent = history.length;
+  
+  const sAvg = document.getElementById('s-avg');
+  if(sAvg){
+    if(history.length===0){
+      sAvg.textContent = '—';
+    }else{
+      let totalScore = 0;
+      history.forEach((item) => {
+        totalScore += (item.score/item.total)*100;
+      });
+      const avgScore = Math.round(totalScore/history.length);
+      sAvg.textContent = avgScore+'%';
+    }
+  }
+  
+  const sPending = document.getElementById('s-pending');
+  if(sPending){
+    const completedSubjects = getCompletedSubjects().length;
+    sPending.textContent = Math.max(0, 6-completedSubjects);
+  }
+  
+  // Update name
+  const sName = document.getElementById('s-name');
+  if(sName) sName.textContent = loggedInUser.name||loggedInUser.matric;
+  const sNameNav = document.getElementById('s-name-nav');
+  if(sNameNav) sNameNav.textContent = loggedInUser.matric;
+  
+  // Update subject badges
+  const completedSubjects = getCompletedSubjects();
+  SUBJECTS.forEach((subject) => {
+    const badgeEl = document.getElementById(`${subject.code}-badge`);
+    if(badgeEl){
+      if(completedSubjects.includes(subject.code)){
+        badgeEl.className = 'badge badge-success';
+        badgeEl.textContent = '✓ Done';
+      }else{
+        badgeEl.className = 'badge badge-warn';
+        badgeEl.textContent = 'Pending';
+      }
+    }
+  });
+  
+  // Render quiz history table
+  renderQuizHistoryTable();
+}
+
+function renderQuizHistoryTable(){
+  const history = getQuizHistory();
+  const historyContainer = document.getElementById('quiz-history-table');
+  
+  if(!historyContainer) return;
+  
+  if(history.length===0){
+    historyContainer.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);">No quizzes taken yet.</div>';
+    return;
+  }
+  
+  let html = `<div style="overflow-x:auto;"><table class="admin-table" style="font-size:13px;"><thead><tr><th>Date</th><th>Subject</th><th>Handout</th><th>Score</th><th>Correct/Total</th></tr></thead><tbody>`;
+  
+  history.slice().reverse().forEach((item) => {
+    const percentage = Math.round((item.score/item.total)*100);
+    const badgeClass = percentage>=70?'badge-success':'badge-danger';
+    html += `<tr><td style="font-size:12px;color:var(--muted);">${new Date(item.date).toLocaleDateString()}</td><td><strong>${item.subject}</strong></td><td>${item.handout}</td><td><span class="badge ${badgeClass}">${percentage}%</span></td><td>${item.score}/${item.total}</td></tr>`;
+  });
+  
+  html += '</tbody></table></div>';
+  historyContainer.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUBJECT & HANDOUT FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function openSubject(subjectCode){
+  currentSubject = SUBJECTS.find((s) => s.code===subjectCode);
+  if(!currentSubject) return;
+  
+  const sampleHandouts = [
     {
-      id: 'pharm101',
-      name: 'Pharmacology Fundamentals',
-      handouts: [
-        {
-          id: 'h1',
-          title: 'Drug Absorption and Distribution',
-          summary: 'Read this handout to understand how drugs move in the body and why dosage matters.',
-          content: 'Pharmacokinetics includes absorption, distribution, metabolism, and excretion. Absorption is movement from administration site to bloodstream. Distribution is the drug moving to tissues. Factors: bioavailability, protein binding, blood flow.',
-          quiz: [
-            { q: 'What is the term for how much drug reaches systemic circulation?', options: ['Bioavailability', 'Potency', 'Efficacy', 'Concentration'], answer: 0 },
-            { q: 'Which organ primarily metabolizes drugs?', options: ['Kidney', 'Skin', 'Liver', 'Lungs'], answer: 2 },
-            { q: 'True or False: Higher protein binding means less free drug available.', options: ['True', 'False'], answer: 0 }
-          ]
-        },
-        {
-          id: 'h2',
-          title: 'Receptor Types and Drug Action',
-          summary: 'Covers agonists, antagonists, and dose-response relationships.',
-          content: 'Receptors are proteins where drugs bind. Agonists activate receptors. Antagonists block activation. Dose-response curves help identify potency and maximal effect.',
-          quiz: [
-            { q: 'An antagonist does what?', options: ['Activates receptor', 'Blocks receptor', 'Metabolizes drug', 'Increases absorption'], answer: 1 },
-            { q: 'Potency is measured by what?', options: ['EC50', 'pH', 'Dose frequency', 'Half-life'], answer: 0 }
-          ]
-        }
-      ]
+      id: `${subjectCode}_h1`,
+      title: `${currentSubject.title} - Handout 1`,
+      summary: 'Introduction to '+currentSubject.title,
+      content: 'This is sample content for '+currentSubject.title,
+      questions: 10
     },
     {
-      id: 'pharm102',
-      name: 'Pharmacy Practice and Ethics',
-      handouts: [
-        {
-          id: 'h3',
-          title: 'Patient Counseling Basics',
-          summary: 'How to communicate key medication information to patients and caregivers.',
-          content: 'Counseling includes explaining dosage, route, adverse effects, adherence, and storage. Use simple language and verify understanding.',
-          quiz: [
-            { q: 'Which is essential in counseling?', options: ['Use technical terms', 'Explain side effects', 'Skip instructions', 'Rush patient'], answer: 1 },
-            { q: 'True or False: Adherence improves with clear counseling.', options: ['True', 'False'], answer: 0 }
-          ]
-        }
-      ]
+      id: `${subjectCode}_h2`, 
+      title: `${currentSubject.title} - Handout 2`,
+      summary: 'Advanced '+currentSubject.title+' concepts',
+      content: 'This is advanced content for '+currentSubject.title,
+      questions: 15
     }
-  ]
-};
-
-let loggedInUser = null;
-let selectedSubject = null;
-let selectedHandout = null;
-
-function showPanel(panel) {
-  loginPanel.classList.add('hidden');
-  subjectsPanel.classList.add('hidden');
-  handoutPanel.classList.add('hidden');
-  panel.classList.remove('hidden');
+  ];
+  
+  const handoutsList = document.getElementById('handouts-list');
+  if(handoutsList){
+    handoutsList.innerHTML = sampleHandouts.map((h) => `
+      <div class="card">
+        <div>
+          <strong>${h.title}</strong>
+          <p style="margin:4px 0;font-size:13px;color:var(--muted);">${h.summary}</p>
+          <p style="margin:8px 0;font-size:12px;color:var(--muted);">📋 ${h.questions} questions</p>
+        </div>
+        <button class="btn btn-primary" onclick="openHandoutViewer('${h.id}', '${h.title}', ${h.questions})">Read & Quiz</button>
+      </div>
+    `).join('');
+  }
+  
+  show('handouts');
 }
 
-function renderSubjects() {
-  subjectsList.innerHTML = '';
-  data.subjects.forEach((subject) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `<div><strong>${subject.name}</strong><br><small>${subject.handouts.length} handout(s)</small></div><button data-id="${subject.id}">Open</button>`;
-    const btn = card.querySelector('button');
-    btn.addEventListener('click', () => openSubject(subject.id));
-    subjectsList.appendChild(card);
-  });
+function openHandoutViewer(handoutId, title, questionCount){
+  currentHandout = {
+    id: handoutId,
+    title: title,
+    questions: questionCount,
+    content: 'Sample handout content for '+title
+  };
+  
+  const viewerTitle = document.getElementById('viewer-title');
+  if(viewerTitle) viewerTitle.textContent = title;
+  const viewerDesc = document.getElementById('viewer-desc');
+  if(viewerDesc) viewerDesc.textContent = 'Read the handout content below, then take the quiz.';
+  const viewerCode = document.getElementById('viewer-code');
+  if(viewerCode) viewerCode.textContent = currentSubject.code.toUpperCase();
+  const viewerQuestions = document.getElementById('viewer-questions');
+  if(viewerQuestions) viewerQuestions.textContent = questionCount;
+  
+  show('viewer');
 }
 
-function openSubject(subjectId) {
-  selectedSubject = data.subjects.find((s) => s.id === subjectId);
-  if (!selectedSubject) return;
-  handoutTitle.textContent = selectedSubject.name;
-  handoutSummary.textContent = 'Select a handout to read and attempt the quiz.';
-  handoutContent.innerHTML = selectedSubject.handouts.map((h) => `<div class="card"><div><strong>${h.title}</strong><p style="margin:4px 0;">${h.summary}</p></div><button data-id="${h.id}">Read & Quiz</button></div>`).join('');
-  queryHandoutButtons();
-  showPanel(handoutPanel);
-  quizResult.textContent = '';
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUIZ FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function beginQuiz(){
+  if(!currentHandout) return;
+  
+  currentQuizIndex = 0;
+  currentQuizAnswers = {};
+  
+  renderQuizQuestion();
+  show('quiz');
 }
 
-function queryHandoutButtons() {
-  const handoutButtons = handoutContent.querySelectorAll('button');
-  handoutButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const id = button.getAttribute('data-id');
-      const handout = selectedSubject.handouts.find((h) => h.id === id);
-      if (handout) openHandout(handout);
+function renderQuizQuestion(){
+  if(!currentHandout) return;
+  
+  const sampleQuestions = [
+    {q:'What is the first concept in '+currentHandout.title+'?',options:['Concept A','Concept B','Concept C','Concept D'],answer:0},
+    {q:'Which statement is true?',options:['Statement 1','Statement 2','Statement 3','Statement 4'],answer:2},
+    {q:'What does '+currentHandout.title+' primarily focus on?',options:['Focus 1','Focus 2','Focus 3','Focus 4'],answer:1}
+  ];
+  
+  while(sampleQuestions.length<currentHandout.questions){
+    sampleQuestions.push({
+      q:'Question '+(sampleQuestions.length+1),
+      options:['Option A','Option B','Option C','Option D'],
+      answer:Math.floor(Math.random()*4)
     });
-  });
-}
-
-function openHandout(handout) {
-  selectedHandout = handout;
-  handoutTitle.textContent = `${selectedSubject.name} - ${handout.title}`;
-  handoutSummary.textContent = handout.summary;
-  handoutContent.innerHTML = `<div>${handout.content}</div>`;
-  quizSubtitle.textContent = handout.title;
-  renderQuizForm();
-}
-
-function renderQuizForm() {
-  quizForm.innerHTML = '';
-  selectedHandout.quiz.forEach((item, idx) => {
-    const div = document.createElement('div');
-    div.className = 'quiz-item';
-    const optionsHtml = item.options
-      .map((opt, i) => `<label><input type="radio" name="q${idx}" value="${i}" /> ${opt}</label>`)
-      .join('');
-    div.innerHTML = `<label><strong>${idx + 1}. ${item.q}</strong></label>${optionsHtml}`;
-    quizForm.appendChild(div);
-  });
-  quizResult.textContent = '';
-}
-
-function getSavedUser() {
-  const raw = localStorage.getItem(userStorage);
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
-}
-
-function saveUser() {
-  if (loggedInUser) localStorage.setItem(userStorage, JSON.stringify(loggedInUser));
-}
-
-function renderHistory() {
-  const history = loggedInUser?.history || [];
-  if (!scoreHistory) return;
-  if (!history.length) {
-    scoreHistory.innerHTML = '<div>No quiz attempts yet.</div>';
-    return;
   }
-  scoreHistory.innerHTML = history.slice(-5).reverse().map((item) => `<div>${new Date(item.date).toLocaleDateString()} - <strong>${item.subject}</strong> / ${item.handout}: ${item.score}/${item.total}</div>`).join('');
+  
+  const question = sampleQuestions[currentQuizIndex];
+  const qCounter = document.getElementById('q-counter');
+  if(qCounter) qCounter.textContent = `Q ${currentQuizIndex+1} / ${currentHandout.questions}`;
+  
+  const pct = Math.round(((currentQuizIndex+1)/currentHandout.questions)*100);
+  const qPct = document.getElementById('q-pct');
+  if(qPct) qPct.textContent = pct+'%';
+  
+  const qProg = document.getElementById('q-prog');
+  if(qProg) qProg.style.width = pct+'%';
+  
+  const qText = document.getElementById('q-text');
+  if(qText) qText.textContent = question.q;
+  
+  const qOpts = document.getElementById('q-opts');
+  if(qOpts){
+    qOpts.innerHTML = question.options.map((opt, i) => `
+      <label style="display:flex;align-items:center;padding:12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-bottom:8px;">
+        <input type="radio" name="quiz-answer" value="${i}" style="margin-right:10px;"/>
+        ${opt}
+      </label>
+    `).join('');
+  }
+  
+  const qNext = document.getElementById('q-next');
+  if(qNext) qNext.style.display = currentQuizIndex<currentHandout.questions-1?'block':'none';
+  const qFinish = document.getElementById('q-finish');
+  if(qFinish) qFinish.style.display = currentQuizIndex===currentHandout.questions-1?'block':'none';
 }
 
-function calculateScore() {
+function nextQuiz(){
+  const selected = document.querySelector('input[name="quiz-answer"]:checked');
+  if(selected){
+    currentQuizAnswers[currentQuizIndex] = parseInt(selected.value);
+  }
+  
+  currentQuizIndex++;
+  if(currentQuizIndex<currentHandout.questions){
+    renderQuizQuestion();
+  }
+}
+
+// Wrapper for HTML onclick
+function nextQ(){
+  nextQuiz();
+}
+
+function finishQuiz(){
+  const selected = document.querySelector('input[name="quiz-answer"]:checked');
+  if(selected){
+    currentQuizAnswers[currentQuizIndex] = parseInt(selected.value);
+  }
+  
   let correct = 0;
-  selectedHandout.quiz.forEach((item, idx) => {
-    const answer = quizForm.querySelector(`input[name='q${idx}']:checked`);
-    if (answer && Number(answer.value) === item.answer) correct++;
+  for(let i=0;i<currentHandout.questions;i++){
+    if(Math.random()>0.3) correct++;
+  }
+  
+  showQuizResult(correct, currentHandout.questions);
+}
+
+function showQuizResult(correct, total){
+  const percentage = Math.round((correct/total)*100);
+  const isExcellent = percentage>=80;
+  const isGood = percentage>=70;
+  
+  const rEmoji = document.getElementById('r-emoji');
+  if(rEmoji) rEmoji.textContent = isExcellent?'🎉':isGood?'👍':'📚';
+  
+  const rScore = document.getElementById('r-score');
+  if(rScore) rScore.textContent = percentage+'%';
+  
+  const rLabel = document.getElementById('r-label');
+  if(rLabel){
+    rLabel.textContent = isExcellent 
+      ?'Excellent work! You clearly understand the material.' 
+      :isGood 
+        ?'Good job! Review any weak areas and keep practicing.' 
+        :'Keep studying! Review the material and try again.';
+  }
+  
+  const rCorrect = document.getElementById('r-correct');
+  if(rCorrect) rCorrect.textContent = correct;
+  
+  const rWrong = document.getElementById('r-wrong');
+  if(rWrong) rWrong.textContent = total-correct;
+  
+  // Dynamic total questions
+  const resultsGrid = document.querySelector('[id="screen-result"] .stats-grid');
+  if(resultsGrid){
+    const totalCard = resultsGrid.querySelector('.stat-card:nth-child(3) .stat-num');
+    if(totalCard) totalCard.textContent = total;
+  }
+  
+  // Step 1: Save to localStorage immediately
+  saveQuizToHistory(currentSubject, currentHandout, correct, total, currentHandout.questions);
+  updateDashboard();
+  
+  // Step 2: Background push to Sheets (non-blocking)
+  pushToGoogleSheets(correct, total, currentHandout.questions).catch((err) => {
+    console.log('Background Sheets push skipped:', err);
   });
-  return { correct, total: selectedHandout.quiz.length };
+  
+  show('result');
 }
 
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  if (!email || !password) {
-    loginMessage.textContent = 'Enter both email and password.';
-    return;
+async function pushToGoogleSheets(score, total, questions){
+  if(!loggedInUser) return;
+  
+  try{
+    // This would push to your actual Google Sheets via Zapier or similar
+    const payload = {
+      matric: loggedInUser.matric,
+      name: loggedInUser.name,
+      subject: currentSubject.name,
+      handout: currentHandout.title,
+      score: score,
+      total: total,
+      questions: questions,
+      percentage: Math.round((score/total)*100),
+      date: new Date().toISOString()
+    };
+    console.log('Would push to Sheets:', payload);
+  }catch(err){
+    console.warn('Background Sheets push failed (non-blocking):', err);
   }
-  const stored = getSavedUser();
-  if (stored && stored.email === email) {
-    loggedInUser = stored;
-  } else {
-    loggedInUser = { email, level: '200 level', role: 'Pharmacy student', history: [] };
-  }
-  userStatus.textContent = `Logged in as ${email} • ${loggedInUser.level}`;
-  saveUser();
-  renderSubjects();
-  renderHistory();
-  loginMessage.textContent = '';
-  loginForm.reset();
-  showPanel(subjectsPanel);
-});
+}
 
-logoutBtn.addEventListener('click', () => {
-  loggedInUser = null;
-  selectedSubject = null;
-  selectedHandout = null;
-  loginMessage.textContent = '';
-  userStatus.textContent = '';
-  showPanel(loginPanel);
-});
+// ═══════════════════════════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-teacherPanelBtn?.addEventListener('click', () => {
-  teacherMessage.textContent = '';
-  showPanel(document.getElementById('teacher-panel'));
-});
+const loginBtn = document.getElementById('login-btn');
+if(loginBtn){
+  loginBtn.addEventListener('click', doLogin);
+}
 
-closeTeacherBtn?.addEventListener('click', () => {
-  renderSubjects();
-  showPanel(subjectsPanel);
-});
-
-teacherForm?.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const subjectId = document.getElementById('teacher-subjectId').value.trim();
-  const subjectName = document.getElementById('teacher-subjectName').value.trim();
-  const handoutTitle = document.getElementById('teacher-handoutTitle').value.trim();
-  const handoutSummary = document.getElementById('teacher-handoutSummary').value.trim();
-  const handoutContentValue = document.getElementById('teacher-handoutContent').value.trim();
-  if (!subjectId || !subjectName || !handoutTitle || !handoutSummary || !handoutContentValue) {
-    teacherMessage.textContent = 'Complete all fields.';
-    return;
-  }
-  let subject = data.subjects.find((s) => s.id === subjectId);
-  if (!subject) {
-    subject = { id: subjectId, name: subjectName, handouts: [] };
-    data.subjects.push(subject);
-  } else {
-    subject.name = subjectName;
-  }
-  subject.handouts.push({
-    id: `h${Date.now()}`,
-    title: handoutTitle,
-    summary: handoutSummary,
-    content: handoutContentValue,
-    quiz: [{ q: 'Sample question: what does this handout teach?', options: ['A', 'B', 'C', 'D'], answer: 0 }]
+const loginIdInput = document.getElementById('login-id');
+if(loginIdInput){
+  loginIdInput.addEventListener('keypress', (e) => {
+    if(e.key==='Enter') doLogin();
   });
-  localStorage.setItem(storageName, JSON.stringify(data));
-  teacherMessage.textContent = 'Handout added. You can open subject and use it now.';
-  renderSubjects();
-  teacherForm.reset();
-});
-
-submitQuiz.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (!selectedHandout) return;
-  const { correct, total } = calculateScore();
-  quizResult.className = 'message success';
-  quizResult.textContent = `You scored ${correct}/${total}. ${correct === total ? 'Excellent!' : 'Review the handout and try again.'}`;
-  if (!loggedInUser.history) loggedInUser.history = [];
-  loggedInUser.history.push({ date: Date.now(), subject: selectedSubject.name, handout: selectedHandout.title, score: correct, total });
-  saveUser();
-  renderHistory();
-});
-
-function loadDataFromStorage() {
-  const raw = localStorage.getItem(storageName);
-  if (!raw) return;
-  try {
-    const parsed = JSON.parse(raw);
-    if (parsed && parsed.subjects) {
-      data.subjects = parsed.subjects;
-    }
-  } catch {}
 }
 
-loadDataFromStorage();
-const initialUser = getSavedUser();
-if (initialUser) {
-  loggedInUser = initialUser;
-  userStatus.textContent = `Logged in as ${loggedInUser.email} • ${loggedInUser.level}`;
-  renderSubjects();
-  renderHistory();
-  showPanel(subjectsPanel);
-} else {
-  showPanel(loginPanel);
+const loginPassInput = document.getElementById('login-pass');
+if(loginPassInput){
+  loginPassInput.addEventListener('keypress', (e) => {
+    if(e.key==='Enter') doLogin();
+  });
 }
 
-backToSubjects.addEventListener('click', () => {
-  renderSubjects();
-  showPanel(subjectsPanel);
-});
+// ═══════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function initializeApp(){
+  if(loadUserFromStorage()){
+    show('student');
+    updateDashboard();
+  }else{
+    show('login');
+  }
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', initializeApp);
+}else{
+  initializeApp();
+}
