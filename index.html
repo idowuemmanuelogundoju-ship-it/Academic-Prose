@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Academic Prose Pharmacy Learning — OOU 200L Pharmacy</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --blue:#185FA5;--blue-dk:#0C447C;--blue-lt:#E6F1FB;
+      --green:#3B6D11;--green-lt:#EAF3DE;
+      --red:#A32D2D;--red-lt:#FCEBEB;
+      --amber-lt:#FAEEDA;--amber-dk:#633806;
+      --bg:#f5f5f3;--surface:#fff;--border:rgba(0,0,0,0.1);
+      --text:#1a1a1a;--muted:#666;
+      --radius:12px;--radius-sm:8px;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    .screen{display:none;min-height:100vh;}.screen.active{display:block;}
+
+    /* NAV */
+    .nav{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:10;}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;}
+    .nav-icon{width:32px;height:32px;background:var(--blue-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+
+    /* LAYOUT */
+    .page{max-width:700px;margin:0 auto;padding:2rem 1.25rem;}
+    .page-wide{max-width:920px;margin:0 auto;padding:2rem 1.25rem;}
+    .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:var(--radius-sm);border:0.5px solid var(--border);background:transparent;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;transition:background 0.15s;}
+    .btn:hover{background:var(--bg);}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;}
+    .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+    .btn-primary:hover{background:var(--blue-dk);}
+    .btn-success{background:var(--green);color:#fff;border-color:var(--green);}
+    .btn-danger{background:var(--red);color:#fff;border-color:var(--red);}
+    .btn-full{width:100%;}
+    .btn-lg{padding:13px 24px;font-size:15px;}
+
+    /* FORM */
+    .form-group{display:flex;flex-direction:column;gap:5px;}
+    .form-label{font-size:13px;color:var(--muted);font-weight:500;}
+    .form-input{width:100%;padding:11px 13px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:var(--surface);color:var(--text);transition:border-color 0.15s,box-shadow 0.15s;}
+    .form-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,0.1);}
+    .form-error{color:var(--red);font-size:13px;display:none;margin-top:4px;}
+
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;}
+    .badge-info{background:var(--blue-lt);color:var(--blue-dk);}
+    .badge-success{background:var(--green-lt);color:var(--green);}
+    .badge-warn{background:var(--amber-lt);color:var(--amber-dk);}
+    .badge-danger{background:var(--red-lt);color:var(--red);}
+    .badge-muted{background:var(--bg);color:var(--muted);}
+
+    /* TABS */
+    .tabs{display:flex;border-bottom:0.5px solid var(--border);margin-bottom:1.5rem;}
+    .tab{padding:10px 16px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--muted);font-weight:500;}
+    .tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:2rem;}
+    .stat-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center;}
+    .stat-num{font-size:28px;font-weight:700;color:var(--text);}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:3px;}
+
+    /* SUBJECTS */
+    .subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;}
+    .subject-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:border-color 0.15s,transform 0.1s,box-shadow 0.15s;}
+    .subject-card:hover:not(.disabled){border-color:var(--blue);transform:translateY(-2px);box-shadow:0 4px 12px rgba(24,95,165,0.1);}
+    .subject-card.disabled{opacity:0.5;cursor:not-allowed;background:var(--bg);}
+    .subject-icon{font-size:28px;margin-bottom:10px;}
+    .subject-title{font-size:15px;font-weight:600;}
+    .subject-meta{font-size:12px;color:var(--muted);margin-top:4px;}
+
+    /* HANDOUT ROWS */
+    .handout-row{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:0.5px solid var(--border);}
+    .handout-row:last-child{border-bottom:none;padding-bottom:0;}
+    .handout-info{flex:1;}
+    .handout-title{font-size:15px;font-weight:500;}
+    .handout-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+
+    /* HANDOUT VIEWER */
+    .handout-viewer{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;}
+    .viewer-toolbar{padding:12px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);}
+    .viewer-frame{width:100%;height:600px;border:none;display:block;}
+
+    /* QUIZ */
+    .progress-wrap{margin-bottom:1.5rem;}
+    .progress-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;}
+    .progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width 0.4s ease;}
+    .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;}
+    .quiz-q{font-size:16px;font-weight:500;line-height:1.65;margin-bottom:1.5rem;}
+    .option{padding:13px 16px;border:0.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;margin-bottom:10px;font-size:14px;line-height:1.5;transition:background 0.12s,border-color 0.12s;}
+    .option:hover:not(.locked){background:var(--bg);border-color:#aaa;}
+    .option.correct{border-color:var(--green);background:var(--green-lt);color:var(--green);font-weight:500;}
+    .option.selected{border-color:var(--blue);background:var(--blue-lt);color:var(--blue-dk);font-weight:500;}
+    .review-item{border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
+    .review-item.rev-correct{border-color:var(--green);background:var(--green-lt);}
+    .review-item.rev-wrong{border-color:var(--red);background:var(--red-lt);}
+    .review-q{font-size:14px;font-weight:600;line-height:1.6;margin-bottom:8px;}
+    .review-ans{font-size:13px;margin-bottom:4px;}
+    .review-exp{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6;border-top:0.5px solid var(--border);padding-top:6px;}
+    .option.wrong{border-color:var(--red);background:var(--red-lt);color:var(--red);}
+    .option.locked{cursor:default;}
+    .exp-box{background:var(--bg);border-left:3px solid var(--blue);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:12px 16px;font-size:13px;color:var(--muted);line-height:1.65;margin-top:14px;display:none;}
+
+    /* ADMIN TABLE */
+    .admin-table{width:100%;border-collapse:collapse;font-size:14px;}
+    .admin-table th{text-align:left;padding:10px 14px;font-size:12px;font-weight:600;color:var(--muted);border-bottom:0.5px solid var(--border);background:var(--bg);}
+    .admin-table td{padding:12px 14px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
+    .admin-table tr:last-child td{border-bottom:none;}
+    .admin-table tr:hover td{background:var(--bg);}
+
+    /* MISC */
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+    .back-btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);cursor:pointer;border:none;background:none;margin-bottom:1.25rem;padding:0;}
+    .back-btn:hover{color:var(--text);}
+    .loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+    .loader-dark{border-color:rgba(0,0,0,0.15);border-top-color:var(--blue);}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+    .toast.show{opacity:1;}
+    .info-box{background:var(--blue-lt);border:0.5px solid rgba(24,95,165,0.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--blue-dk);line-height:1.65;}
+    .divider{border:none;border-top:0.5px solid var(--border);margin:1.5rem 0;}
+    @media(max-width:480px){
+      .stats-grid{gap:8px;}.stat-num{font-size:22px;}
+      .subjects-grid{grid-template-columns:repeat(2,1fr);}
+      .page,.page-wide{padding:1.25rem 1rem;}
+      .viewer-frame{height:400px;}
+      .admin-table th,.admin-table td{padding:8px 10px;}
+    }
+    /* Enhanced mobile responsiveness */
+    @media (max-width: 768px) {
+      body { font-size: 14px; }
+      .page, .page-wide { padding: 1rem; max-width: 100%; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .stat-card { padding: 12px; }
+      .stat-num { font-size: 20px; }
+      .stat-label { font-size: 12px; }
+      .subjects-grid { grid-template-columns: 1fr; gap: 12px; }
+      .subject-card { padding: 16px; min-height: 80px; }
+      .subject-icon { font-size: 24px; }
+      .subject-title { font-size: 16px; }
+      .subject-meta { font-size: 13px; }
+      .btn { min-height: 44px; padding: 12px 16px; font-size: 14px; }
+      .form-input { min-height: 44px; font-size: 16px; } /* Prevents zoom on iOS */
+      .card { padding: 16px; }
+      .nav { padding: 12px 16px; }
+      .nav-logo { font-size: 14px; }
+      .tabs { gap: 8px; }
+      .tab { padding: 8px 12px; font-size: 13px; }
+      .quiz-grid { grid-template-columns: 1fr; gap: 16px; }
+      .option { padding: 16px; font-size: 14px; min-height: 48px; }
+      .viewer-frame { height: 300px; }
+      .admin-table { font-size: 12px; }
+      .admin-table th, .admin-table td { padding: 8px; }
+      .info-box { padding: 12px; font-size: 12px; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card { text-align: center; }
+      .subjects-grid { grid-template-columns: 1fr; }
+      .subject-card { padding: 12px; }
+      .quiz-progress { margin-bottom: 16px; }
+      .q-text { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     LOGIN
+══════════════════════════════════════ -->
+<div id="screen-login" class="screen active login-page">
+  <div class="page" style="max-width:420px;padding-top:3rem;">
+    
+    <!-- HEADER / BRAND -->
+    <div style="text-align:center;margin-bottom:2rem;">
+      <div style="width:60px;height:60px;background:var(--blue-lt);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;">
+        💊
+      </div>
+      <h1 style="font-size:26px;font-weight:700;">
+        Academic Prose Pharmacy Learning
+      </h1>
+      <p style="font-size:14px;color:var(--muted);margin-top:5px;">
+        OOU · 200 Level Pharmacy · Quiz Portal
+      </p>
+    </div>
+
+    <!-- LOGIN CARD -->
+    <div class="card">
+      
+      <!-- TABS -->
+      <div class="tabs" style="margin-bottom:1.25rem;">
+        <div class="tab active" onclick="switchLoginTab('student',this)">
+          Student login
+        </div>
+        <div class="tab" onclick="switchLoginTab('admin',this)">
+          Admin login
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        
+        <div class="form-group">
+          <label class="form-label">Matric number</label>
+          <input 
+            class="form-input"
+            type="text"
+            id="login-id"
+            placeholder="e.g. PHA/24/25/0001"
+            autocomplete="username"
+            onkeydown="if(event.key==='Enter')doLogin()"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input 
+            class="form-input"
+            type="password"
+            id="login-pass"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()"
+          />
+
+          <span class="form-error" id="login-err">
+            Incorrect credentials. Please try again.
+          </span>
+
+          <span id="login-status" style="display:none;font-size:12px;color:var(--muted);margin-top:4px;">
+            Signing in…
+          </span>
+        </div>
+
+        <button 
+          class="btn btn-primary btn-full btn-lg"
+          id="login-btn"
+          onclick="doLogin()"
+        >
+          Sign in
+        </button>
+      </div>
+
+      <!-- FOOTNOTE -->
+      <p style="font-size:12px;color:var(--muted);margin-top:1.25rem;text-align:center;line-height:1.6;">
+        No account? Contact your lecturer to get access.
+      </p>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     STUDENT DASHBOARD
+══════════════════════════════════════ -->
+<div id="screen-student" class="screen">
+  <div class="nav">
+    <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="mode-status" style="font-size:13px;color:var(--muted);"></span>
+      <span style="font-size:14px;color:var(--muted);" id="s-name-nav"></span>
+      <button class="btn" style="font-size:13px;padding:7px 14px;" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+  <div class="page-wide">
+    <div style="margin-bottom:1.75rem;">
+      <h1 style="font-size:22px;font-weight:700;">Welcome, <span id="s-name"></span> 👋</h1>
+      <p style="font-size:14px;color:var(--muted);margin-top:4px;">OOU · 200 Level · Second Semester</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="s-taken">—</div><div class="stat-label">Quizzes taken</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-avg">—</div><div class="stat-label">Avg score</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-pending">—</div><div class="stat-label">Pending</div></div>
+    </div>
+    <div style="margin-bottom:1rem;">
+      <h2 style="font-size:17px;font-weight:600;margin-bottom:4px;">Select a subject</h2>
+      <p style="font-size:13px;color:var(--muted);">All 6 subjects are now live. Select a subject to read the handout and take your quiz.</p>
+    </div>
+    <div class="subjects-grid">
+      <div class="subject-card" onclick="openSubject('pio')">
+        <div class="subject-icon">❤️</div>
+        <div class="subject-title">PIO 202</div>
+        <div class="subject-meta">Physiology · CNS handout</div>
+        <div style="margin-top:10px;"><span class="badge badge-warn" id="pio-badge">Pending</span></div>
+      </div>
+      <div class="subject-card" onclick="openSubject('bch')"><div class="subject-icon">🧪</div><div class="subject-title">BCH 202</div><div class="subject-meta">Biochemistry · Enzymes</div><div style="margin-top:10px;"><span class="badge badge-warn" id="bch-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('ana')"><div class="subject-icon">🦴</div><div class="subject-title">ANA 202</div><div class="subject-meta">Anatomy · Musculoskeletal</div><div style="margin-top:10px;"><span class="badge badge-warn" id="ana-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('pch')"><div class="subject-icon">🔬</div><div class="subject-title">PCH 202</div><div class="subject-meta">Pharm. Chemistry · Acids & Bases</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pch-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('pcg')"><div class="subject-icon">🌿</div><div class="subject-title">PCG 202</div><div class="subject-meta">Pharmacognosy · Natural products</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pcg-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('pct')"><div class="subject-icon">📦</div><div class="subject-title">PCT 202</div><div class="subject-meta">Pharmaceutics · 5 handouts · 50q each</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pct-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('excl')"><div class="subject-icon">⚖️</div><div class="subject-title">EXCL 301</div><div class="subject-meta">Principles of Common Law · 50 questions</div><div style="margin-top:10px;"><span class="badge badge-warn" id="excl-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('pfa')"><div class="subject-icon">💰</div><div class="subject-title">PFA 301</div><div class="subject-meta">Public Financial Administration · 50 questions</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pfa-badge">Pending</span></div></div>
+    </div>
+    <div style="margin-top:2rem;">
+      <h2 style="font-size:17px;font-weight:600;margin-bottom:1rem;">My quiz history</h2>
+      <div id="quiz-history-table"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HANDOUT LIST
+══════════════════════════════════════ -->
+<div id="screen-handouts" class="screen">
+  <div class="nav">
+    <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning</div>
+    <button class="btn" style="font-size:13px;padding:7px 14px;" onclick="logout()">Sign out</button>
+  </div>
+  <div class="page">
+    <button class="back-btn" onclick="show('student')">← Back to subjects</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <span id="handout-icon" style="font-size:26px;">❤️</span>
+      <h2 id="handout-subject" style="font-size:20px;font-weight:700;">Physiology</h2>
+    </div>
+    <p id="handout-desc" style="font-size:13px;color:var(--muted);margin-bottom:1.5rem;">PIO 202 · Second Semester · OOU</p>
+    <div id="handouts-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HANDOUT VIEWER + QUIZ BUTTON
+══════════════════════════════════════ -->
+<div id="screen-viewer" class="screen">
+  <div class="nav">
+    <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge badge-info" style="font-size:11px;" id="viewer-code">PIO 202</span>
+      <button class="btn" style="font-size:13px;padding:7px 14px;" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+  <div class="page">
+    <button class="back-btn" onclick="openSubject(selectedSubject)">← Back to handouts</button>
+    <h2 id="viewer-title" style="font-size:18px;font-weight:700;margin-bottom:4px;">CNS Organisation & Control Systems</h2>
+    <p id="viewer-desc" style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;">Read the full handout below, then take the quiz when ready.</p>
+
+    <div class="handout-viewer">
+      <div class="viewer-toolbar">
+        <span id="viewer-toolbar" style="font-size:13px;font-weight:500;">📄 PIO 202 Handout — Google Drive</span>
+        <a id="viewer-link" href="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy" target="_blank" class="btn" style="font-size:12px;padding:6px 12px;">Open Journal Folder ↗</a>
+      </div>
+      <iframe id="viewer-frame" class="viewer-frame"
+        src="https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <div class="card" style="text-align:center;padding:2rem;">
+      <div style="font-size:36px;margin-bottom:0.75rem;">✅</div>
+      <h3 style="font-size:17px;font-weight:600;margin-bottom:8px;">Done reading?</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;">Once you have finished reading the handout above, click the button below to begin your 50-question quiz. Your score will be shown immediately and submitted to your lecturer.</p>
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px 16px;text-align:left;margin-bottom:1.5rem;font-size:13px;color:var(--muted);line-height:2;">
+        <div>📋 <strong id="viewer-questions" style="color:var(--text);">10 questions</strong> — no time limit</div>
+        <div>✅ Correct answers &amp; explanations revealed at the end</div>
+        <div>📊 Score shown immediately when you finish</div>
+        <div>📤 Result saved to Google Sheets for your lecturer</div>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="beginQuiz()">I have read it — begin quiz 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     QUIZ
+══════════════════════════════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="nav">
+    <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge badge-info" id="q-counter">Q 1 / 50</span>
+    </div>
+  </div>
+  <div class="page">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span style="font-size:12px;color:var(--muted);" id="q-subject-label">PIO 202</span>
+        <span id="q-pct">2%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="q-prog" style="width:2%;"></div></div>
+    </div>
+    <p class="quiz-q" id="q-text"></p>
+    <div id="q-opts"></div>
+    <div class="exp-box" id="q-exp"></div>
+    <div style="margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <button class="btn" id="q-back" onclick="prevQ()" style="display:none;">← Back</button>
+      <div style="display:flex;gap:10px;margin-left:auto;">
+        <button class="btn btn-primary" id="q-next" onclick="nextQ()" style="display:none;">Next →</button>
+        <button class="btn btn-success" id="q-finish" onclick="finishQuiz()" style="display:none;">Submit & see results</button>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;text-align:right;">
+      Keyboard: <strong>A B C D</strong> to pick · <strong>← →</strong> to navigate · <strong>Enter</strong> to confirm
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     RESULT
+══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="nav">
+    <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning</div>
+    <button class="btn" style="font-size:13px;padding:7px 14px;" onclick="logout()">Sign out</button>
+  </div>
+  <div class="page" style="max-width:500px;">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:1.25rem;">Quiz complete! 🎉</h2>
+    <div class="card" style="text-align:center;padding:2rem;margin-bottom:1rem;">
+      <div id="r-emoji" style="font-size:56px;margin-bottom:0.75rem;"></div>
+      <div id="r-score" style="font-size:56px;font-weight:700;"></div>
+      <p id="r-label" style="font-size:14px;color:var(--muted);margin-top:8px;line-height:1.65;max-width:320px;margin-left:auto;margin-right:auto;"></p>
+    </div>
+    <div class="stats-grid" style="margin-bottom:1rem;">
+      <div class="stat-card"><div class="stat-num" id="r-correct"></div><div class="stat-label">Correct</div></div>
+      <div class="stat-card"><div class="stat-num" id="r-wrong"></div><div class="stat-label">Wrong</div></div>
+      <div class="stat-card"><div class="stat-num" id="r-total">0</div><div class="stat-label">Total</div></div>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <span style="font-size:20px;">📊</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Score saved to Google Sheets</div>
+          <p style="font-size:13px;color:var(--muted);line-height:1.65;">Your result has been recorded in your lecturer's Google Sheet. It is now visible to your admin for review.</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:1.5rem;">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:1rem;">📋 Answer Review</h3>
+      <div id="r-review"></div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn" style="flex:1;" onclick="openSubject(selectedSubject)">Back to handouts</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="show('student')">All subjects</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ADMIN DASHBOARD
+══════════════════════════════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="nav">
+    <div class="nav-logo"><div class="nav-icon">💊</div>Academic Prose Pharmacy Learning <span class="badge badge-info" style="margin-left:8px;font-size:11px;">Admin</span></div>
+    <button class="btn" style="font-size:13px;padding:7px 14px;" onclick="logout()">Sign out</button>
+  </div>
+  <div class="page-wide">
+    <div style="margin-bottom:1.5rem;">
+      <h1 style="font-size:22px;font-weight:700;">Admin panel</h1>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px;">Academic Prose Pharmacy Learning · OOU 200L · Manage students, results and quizzes</p>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="adminTab('students',this)">Students</div>
+      <div class="tab" onclick="adminTab('results',this)">Results</div>
+      <div class="tab" onclick="adminTab('sheets',this)">Google Sheets</div>
+      <div class="tab" onclick="adminTab('quizzes',this)">Quizzes</div>
+    </div>
+
+    <!-- STUDENTS TAB -->
+    <div id="at-students">
+      <div class="section-header">
+        <p style="font-size:13px;color:var(--muted);" id="student-count">All registered students</p>
+        <button class="btn btn-primary" style="font-size:13px;padding:8px 16px;" onclick="toggleAddForm()">+ Add student</button>
+      </div>
+
+      <div id="add-form" class="card" style="display:none;margin-bottom:1rem;">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:1rem;">Register new student</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div class="form-group"><label class="form-label">Full name</label><input class="form-input" type="text" id="new-name" placeholder="e.g. Adaeze Obi"/></div>
+          <div class="form-group"><label class="form-label">Matric number</label><input class="form-input" type="text" id="new-matric" placeholder="e.g. PHA/2023/004"/></div>
+          <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="text" id="new-pass" placeholder="Set a login password"/></div>
+          <div class="form-group"><label class="form-label">Email (optional)</label><input class="form-input" type="email" id="new-email" placeholder="student@email.com"/></div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" style="font-size:13px;" onclick="addStudent()">Save student</button>
+          <button class="btn" style="font-size:13px;" onclick="toggleAddForm()">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Name</th><th>Matric no.</th><th>Password</th><th>Email</th><th>Action</th></tr></thead>
+          <tbody id="students-body">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">
+              <div class="loader loader-dark" style="margin:0 auto 8px;"></div>Loading…
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESULTS TAB -->
+    <div id="at-results" style="display:none;">
+      <div class="section-header">
+        <p style="font-size:13px;color:var(--muted);">All quiz submissions from students</p>
+        <button class="btn" style="font-size:13px;padding:8px 16px;" onclick="loadResults()">↻ Refresh</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="admin-table">
+          <thead><tr><th>Student</th><th>Matric</th><th>Subject</th><th>Score</th><th>Correct</th><th>Date & Time</th></tr></thead>
+          <tbody id="results-body">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">
+              <div class="loader loader-dark" style="margin:0 auto 8px;"></div>Loading…
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GOOGLE SHEETS TAB -->
+    <div id="at-sheets" style="display:none;">
+      <div class="info-box" style="margin-bottom:1.25rem;">
+        📊 This platform uses <strong>Google Sheets</strong> as its database. All student accounts and quiz results are stored there. You can open the sheet directly to view, export or print records.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;">
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <div style="font-size:32px;margin-bottom:10px;">👥</div>
+          <div style="font-weight:600;margin-bottom:6px;">Students Sheet</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">Stores all student names, matric numbers and passwords.</p>
+          <a id="students-sheet-link" href="#" target="_blank" class="btn btn-primary btn-full" style="font-size:13px;">Open in Google Sheets ↗</a>
+        </div>
+        <div class="card" style="text-align:center;padding:1.5rem;">
+          <div style="font-size:32px;margin-bottom:10px;">📊</div>
+          <div style="font-weight:600;margin-bottom:6px;">Results Sheet</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">Stores every quiz submission with scores and timestamps.</p>
+          <a id="results-sheet-link" href="#" target="_blank" class="btn btn-primary btn-full" style="font-size:13px;">Open in Google Sheets ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:14px;font-weight:600;margin-bottom:10px;">⚙️ Apps Script URL</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">This is the backend URL connecting the website to Google Sheets. It is already set in your config.</p>
+        <code id="script-url-display" style="font-size:12px;color:var(--blue);word-break:break-all;background:var(--bg);padding:10px 14px;border-radius:var(--radius-sm);display:block;"></code>
+      </div>
+    </div>
+
+    <!-- QUIZZES TAB -->
+    <div id="at-quizzes" style="display:none;">
+      <div class="section-header">
+        <p style="font-size:13px;color:var(--muted);">Lock or unlock individual quizzes for students</p>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-danger" style="font-size:13px;padding:8px 16px;" onclick="lockAllQuizzes()">🔒 Lock all</button>
+          <button class="btn btn-success" style="font-size:13px;padding:8px 16px;" onclick="unlockAllQuizzes()">🔓 Unlock all</button>
+        </div>
+      </div>
+      <div class="info-box" style="margin-bottom:1rem;">
+        🔒 <strong>Locked</strong> quizzes are hidden from students — they will see a "Not available" notice instead of the Open button. Changes take effect immediately.
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="admin-table">
+          <thead><tr><th>Subject</th><th>Handout title</th><th>Questions</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="quiz-lock-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+// ════════════════════════════════════════════
+// CONFIG — paste your Apps Script URL here
+// after deploying the Google Apps Script (use the Apps Script code you provided)
+// Example: https://script.google.com/macros/s/XXXXXXXXXXXXX/exec
+// ════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkqOC9g3GXeK83ZtQ0GZQHD3C3_511PAuhFE1RfVMGbMGjlzAO661VE2Ri_ltM2FWqJw/exec';
+
+// Admin credentials
+const ADMIN_ID   = 'pha/25/26/0091';
+const ADMIN_PASS = 'ogundoju';
+
+// Local storage keys
+const LOCAL_STUDENTS_KEY = 'pharmalearn_students';
+const LOCAL_RESULTS_KEY  = 'pharmalearn_results';
+const QUIZ_LOCKS_KEY     = 'pharmalearn_quiz_locks';
+
+// Test student credential (user requested) for local mode
+const LOCAL_STUDENTS = {
+  'pha/24/25/001': { name: 'Bada', password: 'bada' }
+};
+
+// Google Sheets IDs (fill in after creating sheets)
+const STUDENTS_SHEET_ID = '1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I';
+const RESULTS_SHEET_ID  = '1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I';
+
+// Anthropic API key for AI marking (get from https://console.anthropic.com)
+// IMPORTANT: Replace 'sk-...' with your actual API key
+const ANTHROPIC_API_KEY = 'sk-ant-v1-INSERT_YOUR_API_KEY_HERE';
+
+function getLocalStudents(){
+  return JSON.parse(localStorage.getItem(LOCAL_STUDENTS_KEY) || '[]');
+}
+function setLocalStudents(students){
+  localStorage.setItem(LOCAL_STUDENTS_KEY, JSON.stringify(students));
+}
+function addLocalStudent(student){
+  const arr=getLocalStudents();
+  if(!arr.some(s=>s.matric===student.matric)) arr.push(student);
+  setLocalStudents(arr);
+}
+
+function getLocalResults(){
+  return JSON.parse(localStorage.getItem(LOCAL_RESULTS_KEY) || '[]');
+}
+function setLocalResults(results){
+  localStorage.setItem(LOCAL_RESULTS_KEY, JSON.stringify(results));
+}
+function addLocalResult(result){
+  const arr=getLocalResults();
+  arr.unshift(result);
+  setLocalResults(arr);
+}
+
+// ── STATE ──
+let currentStudent = null;
+let curQ = 0, answers = [], answered = false;
+let loginMode = 'student';
+
+// ══ SUBJECT DATA & QUESTIONS ══
+const SUBJECTS = {
+  pio: {
+    code:'PIO 202', icon:'❤️', name:'Physiology', description:'PIO 202 · Second Semester · OOU',
+    handouts:[
+      { title:'CNS Organisation & Control Systems', file:'https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy',
+        questions:[
+          {q:'Which division of the nervous system contains the brain and spinal cord?', opts:['Autonomic nervous system','Peripheral nervous system','Central nervous system','Somatic nervous system'], ans:2, exp:'The CNS consists of the brain and spinal cord.'},
+          {q:'What cells form myelin sheaths in the CNS?', opts:['Schwann cells','Oligodendrocytes','Astrocytes','Microglia'], ans:1, exp:'Oligodendrocytes myelinate axons in the CNS; Schwann cells do so in the PNS.'},
+          {q:'What is the approximate resting membrane potential of a typical neuron?', opts:['+30 mV','0 mV','-70 mV','-120 mV'], ans:2, exp:'The resting membrane potential is approximately -70 mV.'},
+          {q:'Which structure connects the two cerebral hemispheres?', opts:['Corpus callosum','Thalamus','Hypothalamus','Pons'], ans:0, exp:'The corpus callosum is the large white matter tract connecting both hemispheres.'},
+          {q:'Where is cerebrospinal fluid (CSF) primarily located?', opts:['Subdural space','Subarachnoid space','Epidural space','Spinal ligaments'], ans:1, exp:'CSF circulates in the subarachnoid space, cushioning the brain and spinal cord.'},
+          {q:'Which cranial nerve is responsible for the sense of smell?', opts:['Cranial nerve II','Cranial nerve III','Cranial nerve I','Cranial nerve V'], ans:2, exp:'Cranial nerve I (Olfactory nerve) transmits smell signals to the brain.'},
+          {q:'What type of neuron carries impulses FROM receptors TOWARD the CNS?', opts:['Efferent neuron','Motor neuron','Afferent (sensory) neuron','Interneuron'], ans:2, exp:'Afferent neurons carry sensory information centrally to the CNS.'},
+          {q:'Which lobe of the brain is primarily responsible for processing visual information?', opts:['Occipital lobe','Frontal lobe','Temporal lobe','Parietal lobe'], ans:0, exp:'The occipital lobe contains the primary visual cortex.'},
+          {q:'Which part of the brainstem controls respiratory rate and heart rate?', opts:['Cerebellum','Medulla oblongata','Hypothalamus','Midbrain'], ans:1, exp:'The medulla oblongata contains vital autonomic centres for breathing and cardiovascular regulation.'},
+          {q:'What is the principal neurotransmitter at the neuromuscular junction?', opts:['Dopamine','Acetylcholine','Serotonin','GABA'], ans:1, exp:'Acetylcholine (ACh) is released by motor neurons to trigger muscle contraction.'},
+          {q:'Which part of the neuron receives incoming signals from other neurons?', opts:['Axon terminal','Myelin sheath','Dendrite','Node of Ranvier'], ans:2, exp:'Dendrites are the receiving extensions of a neuron.'},
+          {q:'During an action potential, which ion rapidly enters the neuron causing depolarisation?', opts:['K+','Cl-','Na+','Ca2+'], ans:2, exp:'Voltage-gated Na+ channels open, allowing rapid sodium influx that depolarises the membrane.'},
+          {q:'What is the term for the period after an action potential when a neuron cannot fire again?', opts:['Threshold period','Refractory period','Summation period','Depolarisation period'], ans:1, exp:'The refractory period prevents neurons from re-firing immediately.'},
+          {q:'The thalamus is best described as:', opts:['The emotional centre of the brain','A relay station for sensory signals to the cortex','The balance and coordination centre','The centre for hunger and thirst'], ans:1, exp:'The thalamus routes sensory information to appropriate cortical areas.'},
+          {q:'Which region of the brain is primarily responsible for balance and coordination?', opts:['Frontal lobe','Hippocampus','Cerebellum','Hypothalamus'], ans:2, exp:'The cerebellum coordinates voluntary movements, balance, and fine motor control.'},
+          {q:'The hypothalamus regulates all of the following EXCEPT:', opts:['Body temperature','Hunger and thirst','Language production','Hormonal release via pituitary'], ans:2, exp:'Language production is a cortical function, not hypothalamic.'},
+          {q:'Which neurotransmitter is primarily associated with reward and motivation pathways?', opts:['Serotonin','Norepinephrine','Dopamine','Glutamate'], ans:2, exp:'Dopamine mediates reward and pleasure circuits in the mesolimbic pathway.'},
+          {q:'The blood-brain barrier (BBB) is mainly formed by:', opts:['Microglia','Astrocyte end-feet and tight junctions','Ependymal cells','Oligodendrocytes'], ans:1, exp:'Astrocyte end-feet and tight junctions between endothelial cells form the BBB.'},
+          {q:'Which type of glial cell acts as the CNS immune cell?', opts:['Oligodendrocyte','Astrocyte','Microglia','Ependymal cell'], ans:2, exp:'Microglia are the resident immune cells of the CNS.'},
+          {q:'What is the function of ependymal cells?', opts:['Myelinate axons','Line ventricles and produce CSF','Form the blood-brain barrier','Remove dead neurons'], ans:1, exp:'Ependymal cells line the brain ventricles and are involved in CSF production.'},
+          {q:'Saltatory conduction refers to:', opts:['Signal transmission across a synapse','Action potential jumping between Nodes of Ranvier','Ion movement through the axon membrane','Neurotransmitter reuptake'], ans:1, exp:'In myelinated axons, the action potential jumps between Nodes of Ranvier, increasing speed.'},
+          {q:'Which cranial nerve controls most extraocular muscles?', opts:['Cranial nerve II','Cranial nerve III','Cranial nerve IV','Cranial nerve VI'], ans:1, exp:'Cranial nerve III (Oculomotor) innervates most extraocular muscles.'},
+          {q:'The sympathetic nervous system preganglionic neurons originate from:', opts:['Cranial and sacral regions','Thoracic and lumbar regions','Cervical region only','All spinal cord levels equally'], ans:1, exp:'Sympathetic preganglionic fibres arise from the thoracolumbar (T1-L2) region.'},
+          {q:'Which neurotransmitter is released by postganglionic sympathetic fibres onto target organs?', opts:['Acetylcholine','Dopamine','Norepinephrine','Serotonin'], ans:2, exp:'Postganglionic sympathetic fibres release norepinephrine onto target organs.'},
+          {q:'The parasympathetic nervous system is also called the:', opts:['Fight-or-flight system','Thoracolumbar system','Craniosacral system','Somatic system'], ans:2, exp:'Parasympathetic preganglionic neurons originate in cranial nerves and the sacral spinal cord.'},
+          {q:'Long-term potentiation (LTP) is considered the cellular basis of:', opts:['Sleep regulation','Reflex arcs','Learning and memory','Pain sensation'], ans:2, exp:'LTP is a persistent strengthening of synapses underlying learning and memory.'},
+          {q:'Which receptor type is most closely linked to LTP?', opts:['AMPA receptor','GABA-A receptor','NMDA receptor','Nicotinic receptor'], ans:2, exp:'NMDA receptors are critical for the calcium influx that initiates LTP.'},
+          {q:'GABA is the primary _______ neurotransmitter in the CNS.', opts:['Excitatory','Inhibitory','Modulatory','Neuropeptide'], ans:1, exp:'GABA is the main inhibitory neurotransmitter in the CNS.'},
+          {q:'Glutamate is the primary _______ neurotransmitter in the CNS.', opts:['Inhibitory','Excitatory','Autonomic','Neuropeptide'], ans:1, exp:'Glutamate is the principal excitatory neurotransmitter in the CNS.'},
+          {q:'The reticular activating system (RAS) is associated with:', opts:['Motor control','Arousal and consciousness','Olfaction','Visual processing'], ans:1, exp:'The RAS regulates wakefulness, arousal, and attention.'},
+          {q:'Which structure is critical for forming new declarative memories?', opts:['Amygdala','Hippocampus','Hypothalamus','Thalamus'], ans:1, exp:'The hippocampus is essential for forming new explicit memories.'},
+          {q:'The amygdala is primarily involved in:', opts:['Motor coordination','Emotional processing and fear responses','Language comprehension','Visual recognition'], ans:1, exp:'The amygdala processes emotions, especially fear and threat detection.'},
+          {q:'Which type of synapse is most common in the CNS?', opts:['Electrical synapse','Chemical synapse','Gap junction','Neuroeffector junction'], ans:1, exp:'Chemical synapses that use neurotransmitters are most common in the CNS.'},
+          {q:'What is the minimum stimulus needed to trigger an action potential called?', opts:['Resting potential','Threshold potential','Graded potential','Equilibrium potential'], ans:1, exp:'The threshold potential (~-55 mV) is the critical level at which an action potential fires.'},
+          {q:'Which part of the spinal cord contains sensory neuron cell bodies entering the cord?', opts:['Ventral horn','Dorsal horn','Lateral horn','Anterior horn'], ans:1, exp:'The dorsal horn receives incoming sensory information.'},
+          {q:'Motor neurons that directly innervate skeletal muscles are found in which spinal cord region?', opts:['Dorsal horn','Lateral horn','Ventral (anterior) horn','Dorsal root ganglion'], ans:2, exp:'Lower motor neurons originate in the ventral horn of the spinal cord.'},
+          {q:'The stretch reflex is a _______ arc.', opts:['Polysynaptic','Monosynaptic','Disynaptic','Extrasynaptic'], ans:1, exp:'The stretch reflex involves only one synapse between afferent and efferent neurons.'},
+          {q:'Which imaging technique measures brain electrical activity via scalp electrodes?', opts:['MRI','PET scan','EEG','CT scan'], ans:2, exp:'Electroencephalography (EEG) records electrical activity of the brain.'},
+          {q:'Which lobe is associated with auditory processing?', opts:['Frontal lobe','Parietal lobe','Temporal lobe','Occipital lobe'], ans:2, exp:'The temporal lobe contains the primary auditory cortex.'},
+          {q:'The primary motor cortex is located in which gyrus?', opts:['Superior frontal gyrus','Precentral gyrus','Postcentral gyrus','Cingulate gyrus'], ans:1, exp:'The primary motor cortex lies in the precentral gyrus of the frontal lobe.'},
+          {q:'The primary somatosensory cortex is located in the:', opts:['Precentral gyrus','Postcentral gyrus','Angular gyrus','Insular cortex'], ans:1, exp:'The postcentral gyrus is the primary somatosensory cortex.'},
+          {q:'Broca\'s area is essential for:', opts:['Hearing','Speech production','Visual processing','Balance'], ans:1, exp:'Broca\'s area in the left inferior frontal gyrus controls speech production.'},
+          {q:'Wernicke\'s area is involved in:', opts:['Motor control','Language comprehension','Smell processing','Memory storage'], ans:1, exp:'Wernicke\'s area in the posterior temporal lobe processes language comprehension.'},
+          {q:'During REM sleep, which pattern is observed?', opts:['Slow delta waves, no eye movement','Fast EEG waves, rapid eye movements','Complete muscle activation','Absence of dreaming'], ans:1, exp:'REM sleep has fast EEG activity, rapid eye movements, and vivid dreaming.'},
+          {q:'Which neurotransmitter is primarily associated with sleep and mood regulation?', opts:['Dopamine','Acetylcholine','Serotonin','Histamine'], ans:2, exp:'Serotonin plays a key role in mood and the sleep-wake cycle.'},
+          {q:'The pineal gland secretes which hormone to regulate sleep?', opts:['Cortisol','Melatonin','Oxytocin','Prolactin'], ans:1, exp:'The pineal gland secretes melatonin in response to darkness.'},
+          {q:'Nociceptors are sensory receptors that detect:', opts:['Light touch','Sound','Painful or tissue-damaging stimuli','Temperature only'], ans:2, exp:'Nociceptors respond to potentially damaging stimuli (pain).'},
+          {q:'Substance P is a neuropeptide associated with:', opts:['Inhibitory neurotransmission','Pain signal transmission','Memory consolidation','Reward circuits'], ans:1, exp:'Substance P transmits pain signals in the spinal cord.'},
+          {q:'The autonomic nervous system controls all EXCEPT:', opts:['Heart rate','Glandular secretion','Voluntary movement of the hand','Digestion'], ans:2, exp:'Voluntary skeletal muscle movement is under somatic, not autonomic, control.'},
+          {q:'Neuroplasticity is best described as:', opts:['The brain\'s fixed structure after birth','The CNS ability to reorganise and form new connections','The process of myelin breakdown','Peripheral nerve regeneration'], ans:1, exp:'Neuroplasticity is the brain\'s ability to rewire and adapt throughout life.'},
+        ]
+      }
+    ]
+  },
+  bch: {
+    code:'BCH 202', icon:'🧪', name:'Biochemistry', description:'BCH 202 · Enzyme kinetics and metabolic regulation · OOU',
+    handouts:[
+      { title:'Enzymes & Metabolism', file:'https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy',
+        questions:[
+          {q:'What is the major biological catalyst in cells?', opts:['Hormones','Vitamins','Enzymes','Lipids'], ans:2, exp:'Enzymes are biological catalysts that accelerate reactions.'},
+          {q:'What type of bond is broken in ATP to release energy?', opts:['Peptide bond','Phosphoanhydride bond','Glycosidic bond','Ester bond'], ans:1, exp:'ATP stores energy in its high-energy phosphoanhydride bonds.'},
+          {q:'Which vitamin is a precursor for NAD?', opts:['B1','B2','B3','B6'], ans:2, exp:'Niacin (B3) is a precursor of NAD/NADH.'},
+          {q:'What is Km in enzyme kinetics?', opts:['Max velocity','Substrate concentration at half Vmax','Inhibitor constant','Enzyme concentration'], ans:1, exp:'Km is the substrate concentration where reaction rate is half of Vmax.'},
+          {q:'Noncompetitive inhibition changes:', opts:['Vmax only','Km only','Both Km and Vmax','Neither'], ans:0, exp:'Noncompetitive inhibitors lower Vmax without changing Km.'},
+          {q:'Which pathway produces the most ATP?', opts:['Glycolysis','Krebs cycle','Electron transport chain','Pentose phosphate pathway'], ans:2, exp:'The electron transport chain produces the most ATP during oxidative phosphorylation.'},
+          {q:'Glucose is stored in the liver as:', opts:['Cellulose','Starch','Glycogen','Fructose'], ans:2, exp:'Glycogen is the storage form of glucose in animals.'},
+          {q:'Amino acids are linked by:', opts:['Hydrogen bonds','Peptide bonds','Ionic bonds','Phosphodiester bonds'], ans:1, exp:'Amino acids join via peptide bonds.'},
+          {q:'What is the first step of glycolysis?', opts:['Fructose-6-phosphate formation','Pyruvate formation','Glucose phosphorylation','Lactate production'], ans:2, exp:'Glucose is first phosphorylated to glucose-6-phosphate.'},
+          {q:'Which atom is present in amino acids but not in sugars?', opts:['Oxygen','Nitrogen','Carbon','Hydrogen'], ans:1, exp:'Amino acids contain nitrogen in the amino group.'},
+        ]
+      }
+    ]
+  },
+  ana: {
+    code:'ANA 202', icon:'🦴', name:'Anatomy', description:'ANA 202 · Bones, muscles and joint function · OOU',
+    handouts:[
+      { title:'Musculoskeletal System', file:'https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy',
+        questions:[
+          {q:'Which bone is part of the axial skeleton?', opts:['Femur','Scapula','Sternum','Clavicle'], ans:2, exp:'Sternum is part of the axial skeleton.'},
+          {q:'The tibia is located in the:', opts:['Arm','Forearm','Thigh','Leg'], ans:3, exp:'The tibia is the larger bone in the lower leg.'},
+          {q:'Which joint type allows flexion and extension only?', opts:['Ball-and-socket','Hinge','Saddle','Pivot'], ans:1, exp:'Hinge joints allow flexion and extension, such as the knee.'},
+          {q:'The brain is protected by how many meninges?', opts:['One','Two','Three','Four'], ans:2, exp:'Three meninges: dura, arachnoid, pia mater.'},
+          {q:'Which muscle is the primary respiratory muscle?', opts:['Sternocleidomastoid','Diaphragm','Biceps','Trapezius'], ans:1, exp:'The diaphragm is the primary respiratory muscle.'},
+          {q:'Which organ lies in the left upper abdominal quadrant?', opts:['Liver','Spleen','Appendix','Gallbladder'], ans:1, exp:'The spleen lies in the left upper quadrant.'},
+          {q:'The heart is located in which body cavity?', opts:['Abdominal','Thoracic','Pelvic','Cranial'], ans:1, exp:'The heart is in the thoracic cavity.'},
+          {q:'Which artery supplies blood to the brain?', opts:['Femoral artery','Carotid artery','Renal artery','Gastric artery'], ans:1, exp:'The carotid arteries supply blood to the brain.'},
+          {q:'What type of tissue stores fat?', opts:['Epithelial','Muscle','Adipose','Cartilage'], ans:2, exp:'Adipose tissue stores fat.'},
+          {q:'The smallest functional unit of the kidney is the:', opts:['Neuron','Nephron','Alveolus','Sarcomere'], ans:1, exp:'The nephron is the smallest functional unit of the kidney.'},
+        ]
+      }
+    ]
+  },
+  pch: {
+    code:'PCH 202', icon:'🔬', name:'Pharmaceutical Chemistry', description:'PCH 202 · Acid-base chemistry · OOU',
+    handouts:[
+      { title:'Acids, Bases and pH', file:'https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy',
+        questions:[
+          {q:'pH is defined as the negative logarithm of:', opts:['[H2O]','[OH-]','[H+]','[Na+]'], ans:2, exp:'pH = -log10[H+].'},
+          {q:'A solution with pH 2 is:', opts:['Basic','Neutral','Acidic','Amphoteric'], ans:2, exp:'pH 2 is strongly acidic.'},
+          {q:'The conjugate base of HCl is:', opts:['H2O','Cl-','H3O+','NaCl'], ans:1, exp:'Cl- is the conjugate base of HCl.'},
+          {q:'A buffer resists changes in:', opts:['Volume','Temperature','pH','Color'], ans:2, exp:'A buffer resists pH changes.'},
+          {q:'The Henderson-Hasselbalch equation relates pH to:', opts:['Capacitance','pKa and ratio of salt/acid','Reaction rate','Mass'], ans:1, exp:'It relates pH to pKa and ratio of conjugate base to acid.'},
+          {q:'Which is a weak acid?', opts:['HCl','HNO3','CH3COOH','H2SO4'], ans:2, exp:'Acetic acid is a weak acid.'},
+          {q:'A physiological pH is approximately:', opts:['1.0','4.0','7.4','12.0'], ans:2, exp:'Physiological pH is about 7.4.'},
+          {q:'Which ion increases when pH falls?', opts:['OH-','H+','Na+','K+'], ans:1, exp:'H+ increases as pH falls.'},
+          {q:'Which of these is a strong base?', opts:['NH3','NaOH','CH3COONa','H2O'], ans:1, exp:'NaOH is a strong base that fully dissociates.'},
+          {q:'pKa measures the strength of:', opts:['Electrolytes','Acids','Isotopes','Polymers'], ans:1, exp:'pKa indicates acid strength (lower pKa = stronger acid).'},
+        ]
+      }
+    ]
+  },
+  pcg: {
+    code:'PCG 202', icon:'🌿', name:'Pharmacognosy', description:'PCG 202 · Medicinal plants and active constituents · OOU',
+    handouts:[
+      { title:'Phytochemicals & Natural Drugs', file:'https://drive.google.com/drive/folders/13LOmmuxJ_1VgMuLOyi-csphiLDJ5F9jy',
+        questions:[
+          {q:'Pharmacognosy primarily studies:', opts:['Synthetic drugs','Herbal medicines','Radiation therapy','Surgical techniques'], ans:1, exp:'Pharmacognosy studies natural products and herbal drugs.'},
+          {q:'Which plant part stores most alkaloids?', opts:['Seeds','Roots','Leaves','Stem bark'], ans:1, exp:'Many alkaloids are concentrated in roots.'},
+          {q:'Digitalis is derived from which plant?', opts:['Cinchona','Foxglove','Aloe','Willow'], ans:1, exp:'Digitalis comes from foxglove (Digitalis purpurea).'},
+          {q:'Which constituent is a glycoside?', opts:['Caffeine','Morphine','Digoxin','Vitamin C'], ans:2, exp:'Digoxin is a cardiac glycoside.'},
+          {q:'A common source of aspirin-like compounds is:', opts:['Quinine','Willow bark','Ginger','Peppermint'], ans:1, exp:'Willow bark contains salicin, a precursor of aspirin.'},
+          {q:'Essential oils are typically obtained by:', opts:['Cold pressing','Distillation','Electrolysis','Sublimation'], ans:1, exp:'Essential oils are usually obtained by steam distillation.'},
+          {q:'Morphine is an example of a:', opts:['Terpene','Alkaloid','Flavonoid','Carbohydrate'], ans:1, exp:'Morphine is an alkaloid derived from the opium poppy.'},
+          {q:'Which part of the plant is used for ginger?', opts:['Rhizome','Leaf','Flower','Fruit'], ans:0, exp:'Ginger uses the rhizome, a root structure.'},
+          {q:'Curcumin is found in which spice?', opts:['Pepper','Turmeric','Cinnamon','Clove'], ans:1, exp:'Curcumin is the active compound in turmeric.'},
+          {q:'Adaptogens are natural substances claimed to:', opts:['Cause sleep','Improve resistance to stress','Increase pain','Reduce inflammation'], ans:1, exp:'Adaptogens are claimed to improve resistance to stress.'},
+        ]
+      }
+    ]
+  },
+  pct: {
+    code:'PCT 202', icon:'📦', name:'Pharmaceutics', description:'PCT 202 · Prof. Bakre & Prof. Bamiro · Second Semester · OOU',
+    handouts:[
+      {
+        title:'Pharmaceutical Solutions',
+        file:'https://docs.google.com/document/d/1E6BbENy-OgPGlnhk6JN5SrVPPVY9AB-3f7JGedeDI4o/edit?usp=sharing',
+        questions:[
+          {q:'A solution is best described as:', opts:['A heterogeneous mixture of particles','A homogeneous mixture of solute dissolved in solvent','A suspension of insoluble solids','A dispersion of immiscible liquids'], ans:1, exp:'A solution is a homogeneous mixture where solute molecules are dispersed among solvent molecules.'},
+          {q:'Which of the following is classified as a non-aqueous solution?', opts:['Normal saline','Syrup BP','Elixir (hydroalcoholic)','Sodium chloride injection'], ans:2, exp:'Elixirs are sweetened hydroalcoholic solutions — a type of non-aqueous solution.'},
+          {q:'The term "percentage weight-in-volume" (w/v) means:', opts:['Grams of solute per 100 mL of solution','Grams of solute per 100 g of solution','mL of solute per 100 mL of solution','Moles of solute per litre'], ans:0, exp:'w/v = grams of solute dissolved in 100 mL of solution.'},
+          {q:'Which of the following is an advantage of solution dosage forms?', opts:['More stable than solid dosage forms','Easier to mask unpleasant taste','More rapid onset of action due to no dissolution step','Longer shelf life'], ans:2, exp:'Drugs already in solution require no dissolution step, leading to faster and more complete absorption.'},
+          {q:'Which is a disadvantage of solution dosage forms?', opts:['Uniform dose distribution','Rapid absorption','Less stable than solid forms; prone to microbial growth','Easier to swallow'], ans:2, exp:'Solutions are less stable; signs of instability include colour change, precipitation and microbial contamination.'},
+          {q:'Syrups are defined as:', opts:['Alcoholic solutions of volatile oils','Aqueous solutions containing a high concentration of sugar','Non-aqueous solutions with electrolytes','Oily solutions for external use'], ans:1, exp:'Syrups are aqueous solutions containing a sugar (usually sucrose) at high concentration.'},
+          {q:'Which preservative class includes benzalkonium chloride?', opts:['Alcohols','Organic acids','Quaternary ammonium compounds','Parabens'], ans:2, exp:'Benzalkonium chloride is a quaternary ammonium compound used as an antimicrobial preservative.'},
+          {q:'Methylparaben is used in pharmaceutical solutions primarily as a:', opts:['Sweetening agent','Preservative','Buffer','Antioxidant'], ans:1, exp:'Methylparaben is a widely used antimicrobial preservative in pharmaceutical solutions.'},
+          {q:'Which of the following is NOT a route for solution dosage forms?', opts:['Oral','Parenteral','Topical','Inhalation of dry powder'], ans:3, exp:'Dry powder inhalation is not a solution dosage form; solutions are liquid preparations.'},
+          {q:'A tincture is best described as a:', opts:['Aqueous solution of inorganic salts','Hydroalcoholic solution prepared by extraction of crude drugs','Suspension of fine particles','Sterile solution for injection'], ans:1, exp:'Tinctures are hydroalcoholic solutions prepared by extracting active constituents from crude drugs.'},
+          {q:'Which additive in solutions is used to resist changes in pH?', opts:['Preservative','Buffer','Sweetening agent','Antioxidant'], ans:1, exp:'Buffers resist pH changes and are essential for stability of pH-sensitive drugs in solution.'},
+          {q:'Physical instability of a drug solution is indicated by:', opts:['Change in pH only','Colour change, precipitation or crystal formation','Increase in viscosity only','Change in osmolarity'], ans:1, exp:'Physical instability includes colour change, precipitation, crystal nucleation, and particle formation.'},
+          {q:'Chemical degradation of drugs in solution most commonly occurs via:', opts:['Oxidation and hydrolysis','Evaporation and sedimentation','Protein binding and complexation','Phase separation'], ans:0, exp:'Hydrolysis and oxidation are the most common chemical degradation pathways in solution dosage forms.'},
+          {q:'Microbial stability of solutions is most at risk when:', opts:['The solution is stored at low temperature','Raw materials used are rich in organic compounds supporting microbial growth','The solution is in a sealed amber bottle','Antioxidants are present'], ans:1, exp:'Organic compounds in solutions serve as growth media for bacteria and fungi, promoting microbial instability.'},
+          {q:'Isotonicity modifiers are added to parenteral solutions to:', opts:['Increase viscosity','Match the osmotic pressure of body fluids','Reduce pH','Prevent precipitation'], ans:1, exp:'Isotonicity modifiers (e.g., NaCl, dextrose) ensure solutions have the same osmotic pressure as blood.'},
+          {q:'Which of the following is most widely used as a sweetening agent in pharmaceutical solutions?', opts:['Mannitol','Sorbitol','Sucrose','Glycerol'], ans:2, exp:'Sucrose is the most widely used sweetening agent in pharmaceutical solutions.'},
+          {q:'Antioxidants are added to solutions to prevent:', opts:['Microbial growth','Hydrolysis','Oxidation of susceptible drugs','pH shift'], ans:2, exp:'Antioxidants (e.g., sodium metabisulphite) prevent oxidative degradation of drugs in solution.'},
+          {q:'Which of the following factors does NOT directly affect drug solubility in a solution?', opts:['pH of the solvent','Temperature','Particle shape of capsule shell','Polarity of solvent'], ans:2, exp:'The physical shape of a capsule shell does not affect the solubility of a dissolved drug.'},
+          {q:'Viscosity-enhancing agents are added to topical solutions because:', opts:['They increase drug potency','Aqueous solutions are difficult to retain on skin surfaces','They reduce microbial growth','They neutralise pH'], ans:1, exp:'Viscosity enhancers (e.g., gelling agents) improve retention of topical solutions on skin or mucous membranes.'},
+          {q:'Simple solution is prepared by:', opts:['Extraction of plant material','Dissolving solute in a suitable solvent by stirring or heating','Reacting two solutes chemically','Emulsification of oil and water'], ans:1, exp:'Simple solutions are prepared by dissolving the solute in a suitable solvent, sometimes with stirring or heating.'},
+          {q:'Lugol\'s solution is an example of:', opts:['Solution by simple dissolution','Solution by chemical reaction','Solution by extraction','Non-aqueous solution'], ans:0, exp:'Lugol\'s solution (iodine + KI in water) is prepared by simple dissolution — KI increases iodine solubility.'},
+          {q:'Which solubility expression describes moles of solute per litre of solution?', opts:['Molality','Normality','Molarity','Percentage w/v'], ans:2, exp:'Molarity (mol/L) describes moles of solute dissolved per litre of solution.'},
+          {q:'Oleaginous solutions (e.g., liniments) use which type of solvent?', opts:['Water','Alcohol','Oil','Glycerin'], ans:2, exp:'Oleaginous solutions use oil as the solvent and include liniments and medicated oils.'},
+          {q:'Which factor most increases the dissolution rate of a solid in a solvent?', opts:['Increasing particle size','Decreasing temperature','Increasing surface area by reducing particle size','Adding a preservative'], ans:2, exp:'Reducing particle size increases surface area, greatly accelerating dissolution rate.'},
+          {q:'The stability of a solution dosage form refers to:', opts:['Its ability to maintain therapeutic efficacy and safety throughout shelf life','Its viscosity over time','Its colour at room temperature','Its resistance to evaporation only'], ans:0, exp:'Stability encompasses physical, chemical and microbial integrity over the product\'s intended shelf life.'},
+          {q:'Colligative properties of solutions (e.g., osmotic pressure) depend on:', opts:['The chemical identity of solute','The number of solute particles in solution','The molecular weight only','The colour of the solute'], ans:1, exp:'Colligative properties depend on the number of dissolved particles, not their chemical nature.'},
+          {q:'Supersaturated solutions are:', opts:['More stable than saturated solutions','Contain less solute than a saturated solution','Contain more dissolved solute than at equilibrium and are unstable','Identical to saturated solutions'], ans:2, exp:'Supersaturated solutions contain more dissolved solute than the equilibrium saturation limit and are thermodynamically unstable.'},
+          {q:'Which route of administration for solutions avoids first-pass hepatic metabolism?', opts:['Oral','Intravenous','Rectal','Topical'], ans:1, exp:'Intravenous administration delivers drug directly into systemic circulation, bypassing hepatic first-pass metabolism entirely.'},
+          {q:'The HLB value of an emulsifier affects:', opts:['Only the colour of the emulsion','Whether it stabilises o/w or w/o emulsions','The pH of the solution','The melting point of the drug'], ans:1, exp:'HLB (hydrophilic-lipophilic balance) determines whether a surfactant stabilises oil-in-water or water-in-oil systems.'},
+          {q:'In pharmacy, "spirits" are solutions of:', opts:['Sugars in water','Aromatic materials in alcohol','Proteins in saline','Electrolytes in glycerol'], ans:1, exp:'Spirits are alcoholic solutions of aromatic materials (e.g., peppermint spirit, aromatic ammonia spirit).'},
+          {q:'Which preservative concentration of benzalkonium chloride is typically used?', opts:['10-15%','1-5%','0.002-0.02%','0.5-1%'], ans:2, exp:'Benzalkonium chloride is effective at low concentrations of 0.002 to 0.02%.'},
+          {q:'What is the purpose of flavours and perfumes in pharmaceutical solutions?', opts:['To increase potency','To act as preservatives','To mask unpleasant taste or odour','To enhance dissolution'], ans:2, exp:'Flavouring agents (e.g., peppermint oil, lemon) are added to mask unpleasant taste or odour.'},
+          {q:'Calcium carbonate and lactic acid react to prepare calcium lactate — this is an example of:', opts:['Solution by simple dissolution','Solution by chemical reaction','Extraction-based solution','Solid dispersion'], ans:1, exp:'Solutions prepared by reacting two or more solutes together are classified as solutions by chemical reaction.'},
+          {q:'Which solution type is used for ophthalmic (eye) drops?', opts:['Aqueous non-sterile solution','Sterile isotonic aqueous solution','Alcoholic solution','Oily suspension'], ans:1, exp:'Ophthalmic solutions must be sterile and isotonic to avoid irritation to the delicate eye tissues.'},
+          {q:'Glycerin solutions (glycerites) are viscous preparations used primarily:', opts:['As parenteral injections','For topical application and in ear preparations','As oral antibiotics','In ophthalmic drops only'], ans:1, exp:'Glycerites (glycerin solutions) are viscous, used topically and in ear preparations.'},
+          {q:'The term "elixir" specifically refers to:', opts:['Aqueous solution with high sugar','Clear, sweetened hydroalcoholic solution','Thick oily preparation','Sterile solution for injection'], ans:1, exp:'Elixirs are clear, pleasantly flavoured, sweetened hydroalcoholic solutions.'},
+          {q:'Which route uses solutions applied to body cavities such as enemas and douches?', opts:['Oral route','Parenteral route','Route to body cavities','Topical route'], ans:2, exp:'Enemas, douches, ear drops, and nasal sprays are solutions applied to body cavities.'},
+          {q:'A saturated solution contains:', opts:['No solute','More solute than can dissolve','The maximum amount of solute that can dissolve at that temperature','Only ionised solute'], ans:2, exp:'A saturated solution contains the maximum amount of solute dissolved at a given temperature and pressure.'},
+          {q:'Ethanol acts as a preservative in oral solutions at concentrations:', opts:['Below 5%','Greater than 10%','Exactly 1%','0.002%'], ans:1, exp:'Ethanol requires concentrations greater than 10% to be effective as a preservative in oral solutions.'},
+          {q:'Which of the following best prevents oxidation in solution dosage forms?', opts:['Adding sucrose','Storing in amber containers away from light','Adding more water','Increasing temperature'], ans:1, exp:'Light-resistant (amber) containers reduce photo-oxidation and slow chemical degradation of sensitive drugs.'},
+          {q:'Collodions are solutions used:', opts:['As oral liquids','For ophthalmic use','On body surfaces (topical) to form a film on skin','As sterile injectables'], ans:2, exp:'Collodions (e.g., Flexible Collodion USP) are applied topically and dry to form a protective film on the skin.'},
+          {q:'Which colligative property is used to assess isotonicity of solutions for injection?', opts:['Viscosity','Surface tension','Osmotic pressure','Colour'], ans:2, exp:'Osmotic pressure is the primary colligative property used to assess and adjust isotonicity for injectable and ophthalmic solutions.'},
+          {q:'Propylene glycol used as a solvent in pharmaceutical solutions at 15–30% also functions as a:', opts:['Sweetener','Preservative','Antioxidant','Colourant'], ans:1, exp:'Propylene glycol at 15–30% acts as a preservative in oral solutions and topical preparations; it is not volatile like ethanol.'},
+          {q:'Which statement about solutions is TRUE?', opts:['They always require shaking before use','The concentration of solute is uniform throughout','They are always aqueous','They cannot be administered parenterally'], ans:1, exp:'Solutions are homogeneous; the concentration of solute is uniform throughout the entire preparation.'},
+          {q:'Benzoic acid and sorbic acid are used as preservatives in a concentration range of:', opts:['5-10%','1-3%','0.1-0.5%','0.001-0.01%'], ans:2, exp:'Benzoic acid and sorbic acid are used at 0.1 to 0.5% concentration as antimicrobial preservatives.'},
+          {q:'A drug that degrades rapidly in solution but is stable as a dry powder would be best formulated as:', opts:['Oral solution','Powder for reconstitution at dispensing','Topical solution','Elixir'], ans:1, exp:'Many antibiotics are formulated as dry powders for reconstitution to avoid hydrolytic degradation in solution.'},
+          {q:'Which statement describes a binary solution?', opts:['A solution with three or more components','A solution composed of exactly two substances: solute and solvent','A solution with two layers','A turbid liquid preparation'], ans:1, exp:'A binary solution contains exactly two components — the solute and the solvent.'},
+          {q:'In pharmaceutical solutions, pH control is important primarily to ensure:', opts:['Desirable colour','Drug stability and patient comfort','Higher viscosity','Faster evaporation'], ans:1, exp:'pH control ensures both chemical stability of the drug and patient comfort (e.g., avoiding irritation in eye or injection site).'},
+          {q:'Which type of solution contains the active drug extracted from plant or animal sources?', opts:['Simple solution','Solution by chemical reaction','Solution by extraction (fluid extract/tincture)','Aqueous solution by dilution'], ans:2, exp:'Tinctures and fluid extracts are solutions prepared by extracting active constituents from plant or animal materials.'},
+        ]
+      },
+      {
+        title:'Dispersed Systems (Suspensions & Emulsions)',
+        file:'https://drive.google.com/drive/folders/1q57llzG1KsF-3Xh8khjf0Q0YKwm9e6ZD',
+        questions:[
+          {q:'A dispersed system is a preparation containing:', opts:['Only dissolved drug in solvent','Undissolved or immiscible drug distributed throughout a vehicle','Two miscible liquids mixed together','A single-phase homogeneous mixture'], ans:1, exp:'Dispersed systems contain undissolved or immiscible substances distributed throughout a vehicle (dispersion medium).'},
+          {q:'In a dispersed system, the substance being distributed is called the:', opts:['Continuous phase','External phase','Dispersed phase','Solvent phase'], ans:2, exp:'The dispersed phase is the substance distributed throughout the dispersion medium.'},
+          {q:'Coarse dispersions contain particles usually in the range of:', opts:['1 nm – 0.5 µm','0.5 – 10 µm','10 – 50 µm','> 50 µm'], ans:2, exp:'Coarse dispersions (suspensions and emulsions) typically contain particles of 10 to 50 µm.'},
+          {q:'A pharmaceutical suspension is defined as a preparation containing:', opts:['Dissolved drug in aqueous vehicle','Finely divided drug particles distributed in a vehicle with minimum solubility','Two immiscible liquids emulsified together','Colloidal particles in a gel base'], ans:1, exp:'Suspensions contain finely divided drug particles (the suspensoid) distributed in a vehicle in which the drug has minimum solubility.'},
+          {q:'The sedimentation rate of particles in a suspension is described by:', opts:['Henderson-Hasselbalch equation','Fick\'s first law','Stokes\' law','Beer-Lambert law'], ans:2, exp:'Stokes\' law: V = 2r²(d1-d2)g/9η — relates sedimentation velocity to particle radius, density difference, and viscosity.'},
+          {q:'According to Stokes\' law, sedimentation rate DECREASES when:', opts:['Particle size increases','Density difference between phases increases','Viscosity of the dispersion medium increases','Temperature increases'], ans:2, exp:'Higher viscosity of the medium slows sedimentation, which is why viscosity enhancers are used in suspensions.'},
+          {q:'Which of the following is a desired feature of a pharmaceutical suspension?', opts:['Hard cake formation on standing','Rapid and irreversible sedimentation','Slow settling and easy redispersion on gentle shaking','Non-pourable consistency'], ans:2, exp:'A good suspension settles slowly and must be easily and uniformly redispersed on moderate agitation.'},
+          {q:'Suspensions are preferred over solutions for drugs that are:', opts:['Highly soluble in water','Chemically unstable in aqueous solution','Tasteless and odourless','Small molecule weight compounds'], ans:1, exp:'Drugs unstable in solution (e.g., many antibiotics) are formulated as dry powder suspensions for reconstitution.'},
+          {q:'An emulsion is a dispersion in which the dispersed phase is:', opts:['A solid insoluble drug','Small globules of a liquid immiscible with the vehicle','A colloidal polymer','A volatile drug'], ans:1, exp:'An emulsion consists of small globules of a liquid (dispersed phase) dispersed in an immiscible vehicle.'},
+          {q:'In an oil-in-water (o/w) emulsion:', opts:['Water is the dispersed phase and oil is the continuous phase','Oil is the dispersed phase and water is the continuous phase','Both oil and water are continuous','Oil and water are miscible'], ans:1, exp:'In o/w emulsions, oil is dispersed as globules in an aqueous continuous phase — this type is easier to dilute with water.'},
+          {q:'Which test distinguishes an o/w emulsion from a w/o emulsion?', opts:['pH test','Viscosity measurement','Dilution test and conductivity','Colour test'], ans:2, exp:'o/w emulsions can be diluted with water (water-miscible) and conduct electricity; w/o emulsions cannot.'},
+          {q:'An emulsifying agent is required in emulsions to:', opts:['Increase drug solubility','Stabilise the interface between two immiscible phases','Increase pH','Reduce particle size of suspended drug'], ans:1, exp:'Emulsifiers adsorb at the oil-water interface, reducing interfacial tension and preventing coalescence of droplets.'},
+          {q:'Lecithin, used as an emulsifier for parenteral applications, is classified as a/an:', opts:['Anionic surfactant','Ampholytic surfactant','Nonionic surfactant','Polymeric emulsifier'], ans:1, exp:'Lecithin is an ampholytic (zwitterionic) surfactant used as a natural emulsifier, especially in parenteral emulsions.'},
+          {q:'Which of the following is TRUE about w/o emulsions?', opts:['They can be diluted with water','They are better for topical application as they are more occlusive','They conduct electricity well','They are preferred for oral use'], ans:1, exp:'w/o emulsions are more occlusive, resist washing off with water, and are preferred for dry skin topical applications.'},
+          {q:'The purpose of emulsification in pharmacy includes all EXCEPT:', opts:['Masking unpleasant taste of oil','Improving absorption of oils','Replacing water-soluble drugs in oral preparations','Increasing palatability of oral oil preparations'], ans:2, exp:'Emulsification does not replace water-soluble drugs; it is used to formulate immiscible liquids for administration.'},
+          {q:'Colloidal dispersions have particle sizes in the range of:', opts:['> 50 µm','10–50 µm','1 nm–0.5 µm','< 1 nm'], ans:2, exp:'Colloidal dispersions contain particles of 1 nm to 0.5 µm (500 nm), intermediate between true solutions and coarse dispersions.'},
+          {q:'Lyophilic colloids differ from lyophobic colloids in that they:', opts:['Are thermodynamically unstable','Readily aggregate','Are solvent-loving and form stable systems spontaneously','Require added stabilisers at all times'], ans:2, exp:'Lyophilic colloids (solvent-loving, e.g., proteins, gums) are thermodynamically stable and dissolve spontaneously.'},
+          {q:'Brownian motion in colloidal dispersions refers to:', opts:['Directed movement of particles toward a charge','Random zigzag movement of colloidal particles due to collision with solvent molecules','Settlement of particles under gravity','Aggregation of particles at the interface'], ans:1, exp:'Brownian motion is the random, irregular movement of colloidal particles resulting from collisions with surrounding solvent molecules.'},
+          {q:'The Tyndall effect is used to:', opts:['Measure viscosity of colloids','Detect the presence of colloidal particles by light scattering','Determine pH of dispersions','Measure sedimentation rate'], ans:1, exp:'The Tyndall effect (light scattering by colloidal particles) distinguishes colloids from true solutions.'},
+          {q:'Association colloids (micelles) form when surfactant concentration exceeds:', opts:['The saturation point','The critical micelle concentration (CMC)','The isoelectric point','The HLB value'], ans:1, exp:'Above the CMC, excess surfactant molecules self-assemble into micelles in the bulk solution.'},
+          {q:'Magmas and gels are classified as:', opts:['Coarse dispersions','Fine dispersions','True solutions','Molecular dispersions'], ans:1, exp:'Magmas and gels are fine dispersions with particle sizes in the colloidal to fine dispersion range.'},
+          {q:'The viscosity of the dispersion medium in a suspension affects sedimentation by:', opts:['Increasing particle density','Reducing gravitational force','Increasing resistance to particle movement (slowing settling)','Increasing Brownian motion only'], ans:2, exp:'Higher viscosity increases resistance to particle movement, reducing sedimentation rate as described by Stokes\' law.'},
+          {q:'Suspensions should be stored in wide-mouth containers with adequate airspace to:', opts:['Allow evaporation of solvent','Permit thorough mixing by shaking and ease of pouring','Increase stability','Reduce microbial growth'], ans:1, exp:'Wide-mouth containers with airspace allow adequate shaking to redisperse settled particles before each dose.'},
+          {q:'Controlled flocculation in suspensions is desirable because:', opts:['It produces a hard cake difficult to redisperse','Flocculated particles settle faster but redisperse easily and do not cake','It increases drug solubility','It eliminates the need for a suspending agent'], ans:1, exp:'Controlled flocculation allows particles to settle in loose aggregates that redisperse easily on shaking, preventing caking.'},
+          {q:'Which property of particles in a suspension is measured by Stokes\' law equation variable "r"?', opts:['Density','Charge','Radius','Refractive index'], ans:2, exp:'In Stokes\' law, "r" is the radius of the dispersed spherical particles — larger radius means faster sedimentation.'},
+          {q:'An emulsion is thermodynamically unstable because:', opts:['The oil droplets are too large','Large interfacial area between immiscible phases represents high free energy','The emulsifier is too concentrated','The pH is too low'], ans:1, exp:'Emulsions are thermodynamically unstable due to the large interfacial area and high interfacial free energy between oil and water.'},
+          {q:'Creaming in an emulsion refers to:', opts:['Chemical breakdown of the emulsifier','Aggregation and fusion of droplets into larger ones','Upward movement of oil droplets due to density difference (reversible separation)','Complete irreversible phase separation'], ans:2, exp:'Creaming is the reversible upward migration of oil droplets in o/w emulsions due to lower density; it can be reversed by shaking.'},
+          {q:'Coalescence in an emulsion is:', opts:['Reversible separation of phases','Irreversible fusion of droplets forming larger drops leading to phase separation','Temporary aggregation of droplets','Increase in emulsion viscosity'], ans:1, exp:'Coalescence is irreversible fusion of oil droplets, eventually leading to complete phase separation (breaking of the emulsion).'},
+          {q:'Which dispersed system contains particles of the dispersed phase as small air bubbles?', opts:['Suspension','Emulsion','Foam','Colloidal dispersion'], ans:2, exp:'A foam is a dispersion in which the dispersed phase consists of air or gas bubbles in a liquid or solid continuous phase.'},
+          {q:'Which factor does NOT improve the stability of an emulsion?', opts:['Adding an emulsifying agent','Reducing droplet size','Increasing storage temperature above 40°C','Choosing appropriate HLB emulsifier'], ans:2, exp:'Elevated temperature accelerates creaming, coalescence, and oxidation, destabilising emulsions.'},
+          {q:'A pharmaceutical aerosol is a dispersed system in which the dispersed phase may be:', opts:['Only solid particles','Only liquid droplets','Solid particles or liquid droplets in a gaseous continuous phase','Gas bubbles in a liquid'], ans:2, exp:'Aerosols are dispersions of solid or liquid particles in a gaseous (air) medium for inhalation or topical delivery.'},
+          {q:'The specific gravity difference between dispersed and continuous phases in suspensions affects:', opts:['Colour of the suspension','Drug potency','Rate of particle sedimentation (Stokes\' law variable d1 - d2)','pH of the suspension'], ans:2, exp:'The density difference (d1 - d2) in Stokes\' law directly determines the direction and rate of particle settling or creaming.'},
+          {q:'Zeta potential in colloidal dispersions is important because:', opts:['It determines drug solubility','Higher zeta potential indicates greater electrostatic repulsion between particles, improving stability','It controls the pH of the dispersion','It increases Brownian motion'], ans:1, exp:'High zeta potential (> ±30 mV) indicates strong inter-particle repulsion, preventing aggregation and improving colloidal stability.'},
+          {q:'Which type of emulsifier is most suitable for oral and parenteral emulsions due to low toxicity?', opts:['Anionic surfactants','Cationic surfactants','Nonionic surfactants (Spans/Tweens)','Metallic soaps'], ans:2, exp:'Nonionic surfactants (e.g., Spans, Tweens, lecithin) are preferred for oral and parenteral use due to low irritation and toxicity.'},
+          {q:'What is the "suspending agent" in a pharmaceutical suspension used for?', opts:['To dissolve the drug completely','To increase viscosity of the vehicle and slow sedimentation','To sterilise the suspension','To adjust pH'], ans:1, exp:'Suspending agents (e.g., CMC, tragacanth, bentonite) increase vehicle viscosity, slowing sedimentation of drug particles.'},
+          {q:'The dispersed phase in a colloidal dispersion carries electrical charge. Positively charged colloidal particles include:', opts:['Sulphur dispersions','Kaolin dispersions','Ferric oxide dispersions','Gold dispersions'], ans:2, exp:'Ferric oxide colloidal dispersions carry a positive charge; sulphur and kaolin are negatively charged.'},
+          {q:'The osmotic pressure of a dilute colloidal solution is directly proportional to:', opts:['Particle charge','Particle size','Number of colloidal particles (concentration)','Viscosity of the medium'], ans:2, exp:'Like all colligative properties, osmotic pressure of colloidal solutions is proportional to the number of dispersed particles.'},
+          {q:'Fick\'s first law of diffusion describes:', opts:['The sedimentation rate of colloidal particles','Spontaneous diffusion from higher to lower concentration over time','Electrical migration of charged colloids','Surface tension at the interface'], ans:1, exp:'Fick\'s first law: dm/dt = -DA(dC/dx) — diffusion occurs spontaneously from high to low concentration regions.'},
+          {q:'Micelles formed above the CMC are useful in pharmacy because they:', opts:['Increase drug particle size','Solubilise water-insoluble drugs within their hydrophobic core','Precipitate electrolytes','Reduce bioavailability'], ans:1, exp:'Micellar solubilisation entraps hydrophobic drug molecules in the nonpolar core of micelles, increasing apparent solubility in water.'},
+          {q:'Which statement about pharmaceutical suspensions is CORRECT?', opts:['They provide a homogeneous single phase','Particle size should increase over time for stability','The suspension should be shaken well before each use to ensure uniform dosing','They do not require preservatives'], ans:2, exp:'Suspensions must be shaken before each use to redistribute settled particles and ensure accurate, uniform dose delivery.'},
+          {q:'Sedimentation volume (F) in a suspension equals:', opts:['Height of sediment / total height of suspension × 100','Volume of drug / volume of vehicle','Particle radius / particle density','Rate of settling / viscosity'], ans:0, exp:'Sedimentation volume F = Vu/Vo (height of sediment to total suspension height) — a higher F indicates a better, easily redispersible suspension.'},
+          {q:'Which colloid type forms spontaneously and is thermodynamically stable?', opts:['Lyophobic colloid','Lyophilic colloid','Hydrophobic colloid','Inorganic colloid'], ans:1, exp:'Lyophilic colloids (solvent-loving) are thermodynamically stable and dissolve spontaneously when solute and solvent are mixed.'},
+          {q:'Aluminium hydroxide gel is an example of a:', opts:['True solution','Emulsion','Magma (hydrophilic colloidal dispersion)','Aerosol'], ans:2, exp:'Aluminium hydroxide gel is a magma — a suspension of finely divided inorganic material forming a colloidal/fine dispersion.'},
+          {q:'Homogenisation in emulsion preparation aims to:', opts:['Increase droplet size','Reduce droplet size and create a more uniform distribution','Increase the pH','Sterilise the emulsion'], ans:1, exp:'Homogenisation mechanically reduces droplet size and produces a more uniform emulsion with improved stability.'},
+          {q:'Which dispersed system type includes blood?', opts:['True solution','Coarse dispersion','Colloidal dispersion (biological colloid)','Fine dispersion'], ans:2, exp:'Blood is a biological colloidal dispersion — blood cells are dispersed in serum, which is itself a colloidal protein solution.'},
+        ]
+      },
+      {
+        title:'Surface & Interfacial Tension',
+        file:'https://drive.google.com/drive/folders/1Zp6xRMkqTGL0Dvn5vg-DR86mPmHRgcWq',
+        questions:[
+          {q:'Surface tension arises because molecules at the liquid surface:', opts:['Are repelled by air molecules','Experience a net inward force of attraction from bulk liquid molecules','Have zero kinetic energy','Are more strongly hydrophilic'], ans:1, exp:'Surface molecules lack neighbours on one side, creating a net inward pull — this is surface tension.'},
+          {q:'Surface tension has units of:', opts:['Pa·s','N/m (or dynes/cm)','mol/L','J/K'], ans:1, exp:'Surface tension is force per unit length: N/m in SI units or dynes/cm in CGS.'},
+          {q:'The surface free energy of a liquid is defined as:', opts:['Heat required to vaporise the liquid','Work required to increase surface area by 1 m²','Viscosity of the liquid surface','Kinetic energy of surface molecules'], ans:1, exp:'Surface free energy = work (w) needed to increase surface area by 1 m². Surface contraction is spontaneous (decreases free energy).'},
+          {q:'Interfacial tension is the tension at the boundary between:', opts:['A liquid and a gas','Two immiscible liquids','A solid and a vacuum','Two miscible liquids'], ans:1, exp:'Interfacial tension exists at the interface between two immiscible liquids (e.g., oil and water).'},
+          {q:'Interfacial tension is generally _______ surface tension.', opts:['Greater than','Equal to','Lower than','Independent of'], ans:2, exp:'Interfacial tension between two immiscible liquids is lower than the surface tension of either liquid alone, because adhesive forces across the interface partially cancel cohesive forces.'},
+          {q:'The capillary rise method is MOST accurate for measuring surface tension because:', opts:['The surface is disturbed during measurement','The liquid surface remains undisturbed during measurement','It measures interfacial tension directly','It does not require calibration'], ans:1, exp:'Capillary rise is the most accurate method as the liquid surface remains undisturbed; however, it cannot measure interfacial tension.'},
+          {q:'The equation for the capillary rise method is γ = rhρg/2. What does "h" represent?', opts:['Radius of capillary tube','Height liquid rises in the capillary','Density of liquid','Gravitational acceleration'], ans:1, exp:'"h" is the height to which the liquid rises in the capillary tube.'},
+          {q:'In the capillary rise method, liquid rises in the capillary because:', opts:['Gravity pulls liquid up','Adhesion forces between liquid and capillary wall exceed cohesion forces in the liquid','The liquid has low viscosity','Surface tension is zero'], ans:1, exp:'Liquid rises when adhesion (liquid-wall) > cohesion (liquid-liquid), pulling the liquid upward against gravity until balanced.'},
+          {q:'The drop count method for surface tension measurement is based on the principle that:', opts:['Surface tension is proportional to viscosity','Drop weight at the tip of a capillary equals total surface tension at the tube circumference (W = 2πrγ)','Drop size is constant regardless of surface tension','Temperature does not affect drop formation'], ans:1, exp:'A drop detaches when its weight W equals the surface tension force 2πrγ at the tube circumference.'},
+          {q:'Which method of surface tension measurement uses a platinum ring pulled through a liquid surface?', opts:['Capillary rise method','Drop weight method','DuNouy ring method','Wilhelmy plate method'], ans:2, exp:'The DuNouy ring method uses a platinum ring pulled through the liquid surface; force required equals surface tension.'},
+          {q:'Spreading of a liquid occurs when the spreading coefficient S is:', opts:['Negative','Zero or positive','Greater than 1 only','Equal to surface tension'], ans:1, exp:'Spreading occurs when S = Wa - Wc ≥ 0, meaning the work of adhesion (Wa) between liquids equals or exceeds the work of cohesion (Wc).'},
+          {q:'The spreading coefficient S is defined as:', opts:['Surface tension of liquid A minus surface tension of liquid B','Work of adhesion (Wa) minus work of cohesion (Wc)','Ratio of viscosity to surface tension','Interfacial tension multiplied by area'], ans:1, exp:'S = Wa - Wc. If S ≥ 0, liquid B spreads spontaneously over liquid A.'},
+          {q:'Wetting is best described as:', opts:['Complete evaporation of liquid from a solid surface','The displacement of air from a solid surface by a liquid — an adsorption process','The formation of a bubble at the solid surface','Precipitation of drug on a solid carrier'], ans:1, exp:'Wetting is an adsorption process in which liquid displaces air to make intimate contact with a solid surface.'},
+          {q:'The contact angle (θ) for complete wetting is:', opts:['180°','90°','Greater than 90°','0°'], ans:3, exp:'A contact angle of 0° indicates complete wetting — the liquid spreads fully over the solid surface.'},
+          {q:'A contact angle > 90° indicates:', opts:['Complete wetting','Partial wetting','Non-wetting (hydrophobic solid)','Spreading'], ans:2, exp:'Contact angle > 90° indicates the solid is non-wettable (hydrophobic) by that liquid.'},
+          {q:'Hydrophilic solid surfaces have contact angles that are:', opts:['Greater than 90°','Equal to 180°','Small (close to 0°) with water','Unmeasurable'], ans:2, exp:'Hydrophilic surfaces strongly attract water, resulting in small contact angles and good wetting.'},
+          {q:'To improve wetting of hydrophobic drug powders in suspensions, pharmacists add:', opts:['High concentrations of NaCl','Anionic or nonionic surfactants as wetting agents','Acidic pH adjusters','Protein binders'], ans:1, exp:'Anionic/nonionic surfactants (wetting agents) adsorb onto hydrophobic powder surfaces, reducing contact angle and facilitating wetting.'},
+          {q:'The wetting phenomenon is important in suspension preparation because:', opts:['It increases drug solubility','Drug particles must be individually wetted by the dispersion medium for uniform distribution','It sterilises the suspension','It reduces particle density'], ans:1, exp:'For a uniform suspension, solid drug particles must be completely wetted by the vehicle so they disperse individually.'},
+          {q:'An example of wetting application in pharmacy is:', opts:['Mixing two miscible solvents','Using sodium lauryl sulphate to disperse chloramphenicol palmitate in water','Dissolving sugar in hot water','Filtering a solution'], ans:1, exp:'Sodium lauryl sulphate (anionic surfactant) wets hydrophobic chloramphenicol palmitate particles for uniform suspension preparation.'},
+          {q:'Surface tension of water at room temperature is approximately:', opts:['7 mN/m','25 mN/m','72 mN/m','150 mN/m'], ans:2, exp:'Water has a high surface tension of approximately 72 mN/m (dynes/cm) at 25°C due to strong hydrogen bonding.'},
+          {q:'Addition of surfactants to water DECREASES surface tension by:', opts:['Increasing hydrogen bonding at the surface','Adsorbing at the air/water interface and disrupting cohesive forces between water molecules','Increasing water density','Forming covalent bonds with water'], ans:1, exp:'Surfactants orient at the air/liquid interface with hydrophilic heads in water and hydrophobic tails in air, displacing water molecules and reducing surface tension.'},
+          {q:'The work of adhesion (Wa) between two surfaces represents:', opts:['Energy needed to separate identical molecules in one liquid','Energy required to break the attraction between unlike molecules at their interface','The free energy of surface formation','Gravitational potential energy'], ans:1, exp:'Wa is the work needed to break adhesive (unlike) interactions at an interface — e.g., between oil and water.'},
+          {q:'The work of cohesion (Wc) represents:', opts:['Energy to separate unlike molecules','Energy needed to pull apart identical molecules within a liquid','Surface free energy of a solid','Osmotic work'], ans:1, exp:'Wc is the work to separate identical molecules within the same liquid — reflects cohesive (like-like) forces.'},
+          {q:'Aerosol OT (dioctyl sulphosuccinate sodium) used in suspensions acts as:', opts:['A preservative','A wetting agent (anionic surfactant)','A viscosity reducer','An antioxidant'], ans:1, exp:'Aerosol OT is an effective anionic surfactant wetting agent that reduces solid/liquid interfacial tension in suspensions.'},
+          {q:'In pharmaceutical dosage forms, the Wilhelmy plate method is used to:', opts:['Determine particle size','Measure contact angle and surface/interfacial tension','Assess dissolution rate','Determine osmolarity'], ans:1, exp:'The Wilhelmy plate method measures surface or interfacial tension by determining the force on a thin plate partially immersed in liquid.'},
+          {q:'Surfactants reduce the solid-liquid interfacial tension in wetting by:', opts:['Dissolving the solid surface','Adsorbing preferentially at the solid/liquid interface, displacing air','Increasing the contact angle','Precipitating at the solid surface'], ans:1, exp:'Surfactants adsorb at the solid/liquid interface, displacing trapped air and reducing interfacial tension, thereby improving wetting.'},
+          {q:'Temperature generally affects surface tension by:', opts:['Increasing surface tension as temperature rises','Decreasing surface tension as temperature rises (more thermal energy disrupts cohesion)','Having no effect on surface tension','Doubling surface tension at 100°C'], ans:1, exp:'Surface tension decreases with increasing temperature because higher thermal energy weakens intermolecular cohesive forces at the surface.'},
+          {q:'The presence of electrolytes (inorganic salts) in water generally:', opts:['Decreases surface tension','Has no effect','Slightly increases surface tension (salting-out effect)','Converts surface tension to zero'], ans:2, exp:'Inorganic electrolytes are "negatively adsorbed" at the surface and slightly increase the surface tension of water.'},
+          {q:'Which application in pharmacy involves surface and interfacial tension concepts?', opts:['Tablet compression','Preparation of stable emulsions and suspensions','Determination of drug potency','Sterilisation by autoclave'], ans:1, exp:'Preparation of stable emulsions and suspensions critically depends on reducing and controlling interfacial tension between phases.'},
+          {q:'Contact angle measurement can be used in pharmacy to evaluate:', opts:['Drug potency','Wettability of tablet surfaces and drug powders','Sterility of solutions','Molecular weight of polymers'], ans:1, exp:'Contact angle measurements help assess how easily liquids wet tablet surfaces and drug powders — critical for dissolution and suspension preparation.'},
+          {q:'The capillary rise method CANNOT be used to measure:', opts:['Surface tension of aqueous solutions','Interfacial tension between two immiscible liquids','Surface tension of organic solvents','Surface tension of surfactant solutions'], ans:1, exp:'Capillary rise is not suitable for measuring interfacial tension between two immiscible liquids; other methods (DuNouy, Wilhelmy) are used for that.'},
+          {q:'Oleic acid placed on water spreads as a film because:', opts:['Its cohesion exceeds adhesion with water','The adhesion force between oleic acid and water molecules exceeds the cohesive forces within oleic acid','It has a higher density than water','It dissolves completely in water'], ans:1, exp:'Oleic acid spreads because Wa (adhesion to water) > Wc (cohesion within oleic acid), giving a positive spreading coefficient.'},
+          {q:'Fine powders are difficult to wet because:', opts:['They are too heavy to remain suspended','Fine particles trap air pockets (entrained air) that must be displaced for wetting to occur','They have high density','They dissolve rapidly'], ans:1, exp:'Fine powders entrap air, making wetting difficult. Surfactants help displace this trapped air and achieve wetting.'},
+          {q:'The contact angle for a non-wettable surface equals:', opts:['0°','45°','90°','180°'], ans:3, exp:'A contact angle of 180° represents a completely non-wettable surface where the liquid forms a perfect sphere with no spreading.'},
+          {q:'Which of these pharmaceutical applications directly uses wetting principles?', opts:['Tablet disintegration and dissolution of hydrophobic drugs','Sterilisation of injectables','Determination of drug half-life','Protein binding studies'], ans:0, exp:'Tablet disintegration requires water to wet and penetrate the hydrophobic tablet matrix — surfactants and disintegrants aid this wetting process.'},
+          {q:'Reducing interfacial tension in emulsions is important because:', opts:['It increases drug potency','Lower interfacial tension reduces the energy barrier to forming and stabilising small droplets','It increases pH','It improves colour of the emulsion'], ans:1, exp:'Lower interfacial tension reduces the free energy of the interface, making emulsification easier and the resulting emulsion more stable.'},
+          {q:'The DuNouy ring method is suitable for measuring:', opts:['Surface tension of one liquid only','Both surface tension and interfacial tension between immiscible liquids','Viscosity of colloidal systems','Contact angle on solid surfaces'], ans:1, exp:'The DuNouy ring method can measure both the surface tension of a single liquid and the interfacial tension between two immiscible liquids.'},
+          {q:'Which phenomenon explains why water rises in a narrow capillary tube?', opts:['Gravity','Adhesion between water and glass > cohesion between water molecules, creating capillary action','High density of water','Brownian motion of water molecules'], ans:1, exp:'Capillary action occurs because adhesion between water and hydrophilic glass exceeds cohesion in water, pulling the liquid upward.'},
+          {q:'Surfactants used as wetting agents in tablet manufacture reduce:', opts:['Tablet hardness','Contact angle between tablet surface and dissolution fluid, improving wettability and dissolution','Drug bioavailability','Tablet weight'], ans:1, exp:'Wetting agent surfactants (e.g., SLS) in tablet formulations reduce contact angle, improving water penetration and drug dissolution.'},
+          {q:'Interfacial tension between two liquids is reduced to near zero during:', opts:['Crystallisation','Emulsification at the CMC of a suitable emulsifier','Filtration','Spray drying'], ans:1, exp:'At and above the CMC, emulsifiers reduce interfacial tension dramatically, enabling formation and stabilisation of fine emulsion droplets.'},
+          {q:'Which of the following has the LOWEST surface tension?', opts:['Pure water','Mercury','Organic solvents like ethanol','Aqueous NaCl solution'], ans:2, exp:'Organic solvents such as ethanol and acetone have much lower surface tensions than water due to weaker intermolecular forces.'},
+          {q:'The spreading of topical preparations (lotions, creams) on skin is governed by:', opts:['Osmotic pressure','The spreading coefficient and surface tension relationships','Drug molecular weight','Protein binding'], ans:1, exp:'The spreading coefficient determines whether a topical preparation will spread freely and evenly on skin — important for cosmetic and therapeutic effectiveness.'},
+          {q:'Which equation relates contact angle to interfacial tensions in the three-phase (solid-liquid-gas) system?', opts:['Stokes\' law','Young\'s equation: γSG = γSL + γLG cos θ','Henderson-Hasselbalch equation','Fick\'s first law'], ans:1, exp:'Young\'s equation relates the contact angle θ to solid-gas (γSG), solid-liquid (γSL), and liquid-gas (γLG) interfacial tensions.'},
+          {q:'Hydrophobic materials are often difficult to wet because:', opts:['They are too soluble in water','Their contact angle with water is large (> 90°), indicating poor wetting','They react chemically with water','They have high surface tension themselves'], ans:1, exp:'Hydrophobic materials (large contact angle with water) repel the aqueous medium, making wetting and dispersion difficult without surfactants.'},
+          {q:'Surface tension measurement is important in pharmaceutical aerosol formulation because:', opts:['It determines drug potency','Surface tension of the liquid affects droplet formation and particle size of aerosol droplets','It controls pH of the formulation','It determines drug solubility'], ans:1, exp:'In aerosol formulations, surface tension influences droplet formation, droplet size, and stability — all critical for effective pulmonary drug delivery.'},
+          {q:'The most accurate method for measuring surface tension that leaves the liquid surface undisturbed is:', opts:['DuNouy ring method','Drop weight method','Capillary rise method','Spinning drop method'], ans:2, exp:'The capillary rise method is the most accurate because the liquid surface remains completely undisturbed throughout the measurement.'},
+          {q:'What happens to surface tension when a surfactant is added at concentrations above the CMC?', opts:['Surface tension continues to fall proportionally','Surface tension remains approximately constant (plateau) once the interface is saturated','Surface tension increases','Surface tension reaches zero'], ans:1, exp:'Above the CMC, additional surfactant forms micelles in the bulk solution rather than adsorbing further at the interface, so surface tension no longer decreases.'},
+          {q:'Which application illustrates wetting in wound care?', opts:['Applying a dry bandage','Using detergent-containing wound wash solutions to displace dirt and debris from wound surfaces','Applying an occlusive dressing','Administering intravenous antibiotics'], ans:1, exp:'Detergent/surfactant solutions are used in wound cleaning because their wetting action displaces dirt, debris, and bacteria from the wound surface.'},
+        ]
+      },
+      {
+        title:'Surface-Active Agents (Surfactants)',
+        file:'https://drive.google.com/drive/folders/1q57llzG1KsF-3Xh8khjf0Q0YKwm9e6ZD',
+        questions:[
+          {q:'Surfactants are molecules that possess both:', opts:['Two hydrophilic groups','Two hydrophobic groups','Hydrophilic and hydrophobic regions in the same molecule','Only ionic groups'], ans:2, exp:'Surfactants (amphipathic molecules) contain both a hydrophilic (water-loving) head and a hydrophobic (water-hating) tail.'},
+          {q:'Surfactants accumulate at interfaces because:', opts:['They are insoluble in all solvents','Their amphipathic structure is energetically favourable at the interface, reducing free energy','They are too large to remain in bulk solution','They react chemically at the interface'], ans:1, exp:'The amphipathic structure of surfactants is most stable at interfaces where hydrophilic heads face water and hydrophobic tails face the non-polar phase.'},
+          {q:'Anionic surfactants carry which charge on dissociation in water?', opts:['Positive charge on the active surface group','Negative charge on the long-chain anion','No charge','Both positive and negative'], ans:1, exp:'Anionic surfactants dissociate to give a negatively charged long-chain anion that provides surface activity.'},
+          {q:'Which of the following is an example of an anionic surfactant?', opts:['Cetrimide','Tween 80','Sodium lauryl sulphate (SLS)','Lecithin'], ans:2, exp:'Sodium lauryl sulphate (SLS) is a widely used anionic surfactant (alkyl sulphate).'},
+          {q:'Anionic surfactants are generally NOT suitable for internal use because:', opts:['They are too expensive','They have unpleasant taste and irritant action on the intestinal mucosa','They are incompatible with all drugs','They increase drug solubility too much'], ans:1, exp:'Anionic surfactants (especially alkali soaps and sulphates) have unpleasant taste and irritate intestinal mucosa, limiting oral use.'},
+          {q:'Cationic surfactants dissociate in water to give:', opts:['Negatively charged surface-active anions','Positively charged cations that provide surface activity','Neutral molecules','Both positive and negative ions simultaneously'], ans:1, exp:'Cationic surfactants dissociate to give positively charged surface-active cations (e.g., quaternary ammonium compounds).'},
+          {q:'Cetrimide (cetyltrimethylammonium bromide) is an example of:', opts:['Anionic surfactant','Nonionic surfactant','Cationic surfactant','Ampholytic surfactant'], ans:2, exp:'Cetrimide is a quaternary ammonium cationic surfactant with antibacterial properties.'},
+          {q:'Cationic surfactants are most valued in pharmacy for their:', opts:['Emulsifying properties for oral preparations','Solubilising ability for oils','Bactericidal/antiseptic properties','Ability to increase drug absorption'], ans:2, exp:'Cationic surfactants (e.g., cetrimide, benzalkonium chloride) are used as antiseptics and disinfectants due to their bactericidal action.'},
+          {q:'Ampholytic (zwitterionic) surfactants behave as cations below their isoelectric point and as:', opts:['Nonionic surfactants above it','Anions above their isoelectric point','Cations at all pH values','Polymers at high pH'], ans:1, exp:'Ampholytic surfactants have both cationic and anionic groups; below isoelectric pH they behave as cations, above it as anions.'},
+          {q:'Lecithin is classified as which type of surfactant?', opts:['Anionic','Cationic','Nonionic','Ampholytic (zwitterionic)'], ans:3, exp:'Lecithin (phosphatidylcholine) is an ampholytic surfactant used in parenteral emulsions and liposomal drug delivery.'},
+          {q:'Nonionic surfactants are preferred for pharmaceutical formulations because:', opts:['They are cheapest','They carry no charge, are less irritating, less toxic, and less sensitive to pH and electrolytes','They have the highest surface activity','They are always water-insoluble'], ans:1, exp:'Nonionic surfactants are compatible with ionic species, stable across a wide pH range, and have lower irritation and toxicity.'},
+          {q:'The HLB (Hydrophilic-Lipophilic Balance) scale ranges from:', opts:['0 to 7','0 to 20','1 to 100','1 to 50'], ans:1, exp:'The HLB scale introduced by Griffin ranges from 0 to 20, representing the balance between hydrophilic and lipophilic portions of the surfactant.'},
+          {q:'A surfactant with HLB value of 3–6 is most suitable as:', opts:['O/W emulsifying agent','Detergent','W/O emulsifying agent','Solubilising agent'], ans:2, exp:'Low HLB values (3–6) indicate lipophilic character, suitable for water-in-oil (W/O) emulsification.'},
+          {q:'A surfactant with HLB value of 12–15 is most suitable as:', opts:['W/O emulsifying agent','Antifoaming agent','O/W emulsifying agent and detergent','Wetting agent only'], ans:2, exp:'High HLB values (12–15) indicate hydrophilic character, suitable for oil-in-water (O/W) emulsification and detergency.'},
+          {q:'Spans (sorbitan esters) are nonionic surfactants with LOW HLB values. They are used primarily as:', opts:['O/W emulsifiers','W/O emulsifiers','Solubilising agents','Preservatives'], ans:1, exp:'Spans have low HLB numbers, are poorly water-soluble, and stabilise water-in-oil (W/O) emulsions.'},
+          {q:'Tweens (polysorbates) are nonionic surfactants with HIGH HLB values. They are used primarily as:', opts:['W/O emulsifiers','O/W emulsifiers and solubilising agents','Bactericidal agents','Antifoaming agents'], ans:1, exp:'Tweens are water-soluble with high HLB values, used as O/W emulsifiers and solubilising agents for poorly soluble drugs.'},
+          {q:'The critical micelle concentration (CMC) is the concentration at which:', opts:['Surfactant precipitates from solution','Surface tension of the solution reaches its minimum and micelles begin to form','The surfactant becomes fully ionised','The surfactant decomposes'], ans:1, exp:'At the CMC, the air/water interface becomes saturated with surfactant and excess molecules form micelles in the bulk solution.'},
+          {q:'In a micelle, the hydrophobic tails of surfactant molecules are directed:', opts:['Towards the aqueous medium','Outward toward water','Inward, away from water (toward the core)','Randomly in all directions'], ans:2, exp:'In aqueous micelles, hydrophobic tails point inward to form a nonpolar core, while hydrophilic heads face the surrounding water.'},
+          {q:'Micellar solubilisation in pharmacy is used to:', opts:['Increase the aqueous solubility of poorly water-soluble drugs','Decrease drug bioavailability','Increase drug viscosity','Remove water from formulations'], ans:0, exp:'Hydrophobic drugs partition into the nonpolar micellar core, dramatically increasing their apparent aqueous solubility.'},
+          {q:'Cationic surfactants are incompatible with:', opts:['Water','Nonionic surfactants','Anionic surfactants (they form complexes and lose activity)','Alcohol'], ans:2, exp:'Mixing cationic and anionic surfactants causes complexation and loss of surface activity of both.'},
+          {q:'Which surfactant class is used as an expectorant by reducing viscosity of bronchial secretions?', opts:['Alkali soaps','Nonionic surfactants in aerosol form (calfactants)','Anionic sulphonates','Metallic soaps'], ans:1, exp:'Surfactant aerosols (e.g., calfactants) are inhaled to loosen and reduce viscosity of bronchial mucus, aiding expectoration.'},
+          {q:'Aerosol OT (dioctyl sulphosuccinate sodium) is classified as an:', opts:['Cationic surfactant','Nonionic surfactant','Anionic surfactant (alkyl sulphonate)','Ampholytic surfactant'], ans:2, exp:'Aerosol OT is an anionic surfactant (alkyl sulphosuccinate) used as an effective wetting agent in pharmaceutical preparations.'},
+          {q:'Which property of cationic surfactants makes them incompatible with anionic surfactants?', opts:['Both carry the same charge','They form insoluble ion pairs/complexes, losing surface activity','They have the same HLB value','They have identical molecular weights'], ans:1, exp:'Oppositely charged ionic surfactants form insoluble ion-pair complexes, causing precipitation and loss of both surfactants\' surface activity.'},
+          {q:'Polysorbate 80 (Tween 80) is widely used in parenteral formulations because:', opts:['It has antimicrobial properties','It is nonionic, relatively non-toxic, and improves solubilisation of hydrophobic drugs','It is the cheapest surfactant available','It lowers pH'], ans:1, exp:'Tween 80 is nonionic, biocompatible, and approved for parenteral use; it solubilises oil-soluble vitamins and drugs in aqueous injections.'},
+          {q:'Benzalkonium chloride used as a preservative in eye drops is a:', opts:['Nonionic surfactant','Anionic surfactant','Cationic surfactant (quaternary ammonium compound)','Ampholytic surfactant'], ans:2, exp:'Benzalkonium chloride is a quaternary ammonium cationic surfactant used at 0.002–0.02% as a preservative in ophthalmic preparations.'},
+          {q:'Surfactants used as flocculating agents in suspensions produce controlled flocculation by:', opts:['Dissolving the drug particles','Reducing electrostatic repulsion between particles, allowing loose aggregate formation','Increasing zeta potential','Increasing drug solubility'], ans:1, exp:'Surfactants reduce zeta potential and electrostatic repulsion between drug particles, promoting controlled flocculation into loose aggregates that are easily redispersed.'},
+          {q:'The HLB system was introduced by Griffin in which year?', opts:['1920','1947','1965','1990'], ans:1, exp:'The HLB system was introduced by Griffin in 1947 to classify and select nonionic surfactants for emulsion formulation.'},
+          {q:'Polymeric surfactants differ from small-molecule surfactants in that they:', opts:['Do not adsorb at interfaces','Provide steric stabilisation of emulsions and dispersions through their large molecular size','Are always ionic','Cannot form micelles'], ans:1, exp:'Polymeric surfactants (e.g., Poloxamers) adsorb at interfaces and provide steric stabilisation — their long polymer chains create a physical barrier to droplet coalescence.'},
+          {q:'Which surfactant type is used as an antiseptic skin cleanser due to bactericidal properties against gram-positive bacteria?', opts:['Alkali soaps (anionic)','Cetrimide (cationic)','Span 80 (nonionic)','Lecithin (ampholytic)'], ans:1, exp:'Cetrimide (cationic surfactant) is used in antiseptic preparations for skin cleansing due to its bactericidal action against gram-positive organisms.'},
+          {q:'In semi-solid preparations like creams and ointments, surfactants are added to:', opts:['Reduce drug concentration','Alter release characteristics and improve drug penetration','Sterilise the preparation','Increase viscosity only'], ans:1, exp:'Surfactants in semisolids alter the release rate of the incorporated drug and can enhance percutaneous penetration through skin.'},
+          {q:'Which of the following accurately ranks surfactant types by toxicity for internal use (safest first)?', opts:['Cationic > Anionic > Nonionic','Nonionic > Ampholytic > Anionic > Cationic (nonionic safest)','Anionic > Nonionic > Cationic','All are equally toxic'], ans:1, exp:'Nonionic surfactants are generally least toxic/irritating for internal use, followed by ampholytic, then anionic, with cationic surfactants most irritating internally.'},
+          {q:'Solubilisation by micelles is most effective for:', opts:['Highly water-soluble drugs','Drugs with large positive charge','Poorly water-soluble (hydrophobic) drugs that partition into the micellar core','Ionic drugs only'], ans:2, exp:'Micellar solubilisation is most effective for hydrophobic drugs, which partition into the nonpolar micellar core, significantly increasing their water solubility.'},
+          {q:'Sodium dioctyl sulphosuccinate (aerosol OT) in laxative preparations acts as:', opts:['A stimulant laxative','A bulk laxative','A stool softener (wetting agent that allows water to penetrate faecal mass)','An osmotic laxative'], ans:2, exp:'Aerosol OT as an anionic surfactant wetting agent reduces surface tension, allowing water to penetrate and soften faecal matter.'},
+          {q:'For an O/W emulsion to be stable, the required HLB of the emulsifier should be:', opts:['3–6','8–18','1–3','18–20'], ans:1, exp:'O/W emulsifiers require HLB values of approximately 8–18 to provide the hydrophilic character needed to stabilise oil droplets in water.'},
+          {q:'Which route of administration is NOT suitable for cationic surfactants in high concentrations due to their cell membrane toxicity?', opts:['Topical as antiseptic','Oral at therapeutic doses','Intravenous injection','As preservative in eye drops at low concentration'], ans:2, exp:'Cationic surfactants disrupt cell membranes; at high concentrations they are haemolytic and toxic — IV administration at active concentrations is contraindicated.'},
+          {q:'Nonionic surfactants are stable at:', opts:['Acidic pH only','Alkaline pH only','A wide range of pH values and in the presence of electrolytes','Only neutral pH'], ans:2, exp:'Unlike ionic surfactants, nonionics are stable and active across a wide pH range and are not sensitive to electrolyte concentration.'},
+          {q:'Alkyl sulphates (e.g., SLS) are unstable at:', opts:['Neutral pH','High pH above 10','Low pH (acidic conditions — hydrolysis occurs)','All pH values equally'], ans:2, exp:'Alkyl sulphate anionic surfactants undergo acid hydrolysis at low pH, generating fatty alcohol and reducing surface activity.'},
+          {q:'The term "amphipathic" describes surfactant molecules that have:', opts:['Two identical polar regions','Both polar (hydrophilic) and nonpolar (hydrophobic) structural regions in the same molecule','Only nonpolar chains','Only ionic groups'], ans:1, exp:'"Amphipathic" (or amphiphilic) describes molecules with both water-loving and water-hating regions — the defining structural property of all surfactants.'},
+          {q:'Surfactant molecules in a micelle align with hydrophilic heads outward and hydrophobic tails inward. This arrangement is responsible for:', opts:['Precipitation of drugs','Solubilisation of hydrophobic drugs in the micellar core','Increase in solution viscosity','Antimicrobial activity'], ans:1, exp:'The nonpolar micellar core formed by inward-pointing hydrophobic tails provides a hydrophobic environment that solubilises poorly water-soluble drugs.'},
+          {q:'Which anionic surfactant is classified as an alkyl sulphonate and is an effective wetting agent?', opts:['Sodium stearate','Sodium lauryl sulphate','Aerosol OT (sodium dioctyl sulphosuccinate)','Potassium oleate'], ans:2, exp:'Aerosol OT is an alkyl sulphosuccinate (a type of sulphonate anionic surfactant) widely used as a wetting agent.'},
+          {q:'Surface active agents used in aerosol inhalers serve to:', opts:['Increase propellant boiling point','Reduce surface tension and improve spreading of the drug on bronchial mucosa','Increase drug molecular weight','Act as preservatives'], ans:1, exp:'Surfactants in aerosol inhalers reduce surface tension, enhancing drug deposition and spreading across the mucosal surface of the respiratory tract.'},
+          {q:'Poloxamers are polymeric surfactants that provide emulsion stability primarily through:', opts:['Electrostatic repulsion between droplets','Steric stabilisation by their large poly(ethylene oxide) blocks surrounding droplets','Reduction of interfacial tension to zero','Precipitation at the interface'], ans:1, exp:'Poloxamer poly(ethylene oxide) chains adsorb at the oil-water interface creating a steric barrier that prevents droplet coalescence.'},
+          {q:'Which statement about the CMC is TRUE?', opts:['Surface tension keeps falling indefinitely after CMC','Below the CMC, surfactant molecules exist as monomers; above CMC they form micelles','Micelles form below the CMC','The CMC is the same for all surfactants'], ans:1, exp:'Below the CMC, surfactant monomers adsorb at the interface. Above the CMC, excess monomers form micelles in the bulk solution while the interface remains saturated.'},
+          {q:'Amine soaps are anionic surfactants formed by reaction between:', opts:['Fatty acids and strong bases (NaOH, KOH)','Amines (ethanolamine, diethanolamine) and fatty acids','Fatty alcohols and sulphuric acid','Fatty acids and quaternary ammonium salts'], ans:1, exp:'Amine soaps are formed by neutralisation of fatty acids (e.g., oleic acid) with amines like triethanolamine.'},
+          {q:'Metallic soaps (e.g., calcium stearate) are formed from:', opts:['Alkali metals with short-chain fatty acids','Divalent/trivalent metals (Ca, Mg, Zn, Al) with long-chain fatty acids','Alkyl sulphates and metals','Fatty alcohols and metals'], ans:1, exp:'Metallic soaps are salts of divalent or trivalent metals (calcium, magnesium, zinc, aluminium) with long-chain fatty acids.'},
+          {q:'HLB values between 9 and 11 are most suitable for:', opts:['W/O emulsification','O/W emulsification only','Wetting and spreading agents','Antifoaming agents'], ans:2, exp:'HLB 9–11 corresponds to wetting and spreading agents, which balance hydrophilic and lipophilic character for surface contact applications.'},
+          {q:'Sodium lauryl sulphate (SLS) is commonly included in tablet formulations as a:', opts:['Binder','Disintegrant','Wetting agent (surfactant) to improve drug wettability and dissolution','Lubricant'], ans:2, exp:'SLS improves wetting of hydrophobic drug surfaces in tablet formulations, enhancing tablet disintegration and drug dissolution rate.'},
+          {q:'Which surfactant type is characterised by having both cationic (ammonium) and anionic (carboxylate) groups depending on pH?', opts:['Anionic surfactants','Cationic surfactants','Nonionic surfactants','Ampholytic surfactants'], ans:3, exp:'Ampholytic surfactants (e.g., lecithin, N-dodecyl alanine) carry cationic groups below their isoelectric pH and anionic groups above it.'},
+        ]
+      },
+      {
+        title:'Phase Rule',
+        file:'https://drive.google.com/drive/folders/1q57llzG1KsF-3Xh8khjf0Q0YKwm9e6ZD',
+        questions:[
+          {q:'The phase rule was first proposed by:', opts:['Antoine Lavoisier','J. Willard Gibbs in 1876','Louis Pasteur','Arrhenius'], ans:1, exp:'The phase rule F = C - P + 2 was proposed by J. Willard Gibbs in 1876.'},
+          {q:'The phase rule equation is:', opts:['F = C + P - 2','F = C - P + 2','F = C × P / 2','F = P - C + 2'], ans:1, exp:'The phase rule: F = C - P + 2, where F = degrees of freedom, C = components, P = phases.'},
+          {q:'In the phase rule, what does "F" (degrees of freedom) represent?', opts:['Number of phases present','Number of chemical components','Minimum number of independent variables (T, P, concentration) needed to fully define the system','Equilibrium constant'], ans:2, exp:'F = degrees of freedom: the least number of variable factors that must be specified to completely define the system at equilibrium.'},
+          {q:'A system with F = 0 is described as:', opts:['Bivariant','Univariant','Nonvariant (invariant)','Multivariant'], ans:2, exp:'F = 0 means the system is nonvariant — all variables (pressure, temperature, composition) are fixed and cannot be changed without altering the system.'},
+          {q:'A system with F = 1 is described as:', opts:['Nonvariant','Univariant (one degree of freedom)','Bivariant','Trivariant'], ans:1, exp:'F = 1 means the system is univariant — specifying one variable (e.g., temperature) automatically fixes all others.'},
+          {q:'For a one-component (C=1) single-phase system (P=1), the degrees of freedom are:', opts:['0','1','2','3'], ans:2, exp:'F = 1 - 1 + 2 = 2 (bivariant). Both temperature and pressure must be specified to define the state completely.'},
+          {q:'At the triple point of a one-component system:', opts:['F = 1','F = 2','F = 0 (all three phases coexist in equilibrium at fixed T and P)','F = 3'], ans:2, exp:'Triple point: P=3, C=1, so F = 1 - 3 + 2 = 0. Temperature and pressure at the triple point are fixed and cannot be varied.'},
+          {q:'For water, the triple point conditions are approximately:', opts:['0°C and 1 atm','100°C and 1 atm','0.0076°C and 4.58 mmHg','37°C and 760 mmHg'], ans:2, exp:'Water\'s triple point is at 0.0076°C (273.16 K) and 4.58 mmHg — the unique T and P where solid, liquid, and vapour coexist.'},
+          {q:'A phase is defined as:', opts:['A pure chemical compound','A homogeneous, physically distinct portion of a system separated from others by bounding surfaces','Any mixture of substances','A solution of one substance in another'], ans:1, exp:'A phase is a homogeneous, physically distinct portion of a system that is separated from other portions by definite bounding surfaces.'},
+          {q:'A mixture of ice, liquid water, and water vapour is a:', opts:['1-phase system','2-phase system','3-phase system','4-phase system'], ans:2, exp:'Ice, liquid water, and water vapour are three physically distinct phases of the same component (H2O).'},
+          {q:'A solution of ethanol and water is a _______ system.', opts:['1-component, 2-phase','2-component, 1-phase','1-component, 1-phase','2-component, 2-phase'], ans:1, exp:'Ethanol + water = 2 components; they are completely miscible, forming one homogeneous liquid phase.'},
+          {q:'A mixture of chloroform and water (non-miscible) at equilibrium consists of:', opts:['1 phase','2 phases','3 phases','4 phases'], ans:1, exp:'Non-miscible liquids separate into two distinct layers — 2 phases. Their composition can be expressed using 2 components (CHCl3 and H2O).'},
+          {q:'The reduced phase rule for condensed systems is F\' = C - P + 1 because:', opts:['Temperature is ignored','Pressure is fixed at 1 atm (vapour phase neglected), removing one degree of freedom','Composition is held constant','The number of components is reduced by one'], ans:1, exp:'Condensed systems operate at fixed pressure (1 atm), so the vapour phase is neglected and one degree of freedom is removed: F\' = C - P + 1.'},
+          {q:'A "component" in the phase rule is defined as:', opts:['Any substance present in the system','The least number of chemically distinct species needed to express the composition of all phases','A single atom in the system','One mole of substance'], ans:1, exp:'Components are the minimum number of chemically distinct (independently variable) species needed to describe the composition of every phase present.'},
+          {q:'The water system has how many components?', opts:['Two (H and O)','Three (ice, water, steam)','One (H2O)','Four'], ans:2, exp:'The water system has 1 component (H2O). All three phases (ice, liquid water, steam) can be described using only one chemical species.'},
+          {q:'The sulphur system has four phases: rhombic sulphur, monoclinic sulphur, liquid sulphur, and sulphur vapour. How many components does it have?', opts:['Four','Two','One (S)','Three'], ans:2, exp:'All four phases of sulphur can be expressed using one chemical individual — sulphur (S). It is a one-component system.'},
+          {q:'In a one-component two-phase system (e.g., water + vapour), applying the phase rule gives F =:', opts:['0','1','2','3'], ans:1, exp:'F = 1 - 2 + 2 = 1 (univariant). Specifying either temperature OR pressure fixes the other along the vaporisation curve.'},
+          {q:'The melting curve (solid-liquid equilibrium line) in a phase diagram is also called:', opts:['Sublimation curve','Vaporisation curve','Fusion (melting) curve','Triple point curve'], ans:2, exp:'The solid/liquid equilibrium line is called the fusion or melting curve; it shows T and P conditions where solid and liquid coexist.'},
+          {q:'The sublimation curve in a phase diagram represents equilibrium between:', opts:['Solid and liquid','Liquid and vapour','Solid and vapour','All three phases'], ans:2, exp:'The sublimation curve (OB) shows conditions of T and P where solid and vapour coexist in equilibrium.'},
+          {q:'The vaporisation curve in a phase diagram represents equilibrium between:', opts:['Solid and liquid','Liquid and vapour','Solid and vapour','All three phases'], ans:1, exp:'The vaporisation curve (OA) shows T and P conditions where liquid and vapour coexist.'},
+          {q:'Phase diagrams are used in pharmaceutical drug formulation to:', opts:['Determine drug dose','Optimise stability and predict physical behaviour of formulations under varying T and concentration','Measure drug potency','Determine drug absorption rate'], ans:1, exp:'Phase diagrams help formulators understand solubility, stability boundaries, polymorphic transitions, and phase behaviour of multicomponent drug systems.'},
+          {q:'Polymorphism in drugs refers to:', opts:['The drug existing in multiple dosage forms','A drug existing in different crystal structures (polymorphs) with different physical properties','The drug having multiple mechanisms of action','Chemical degradation forming multiple products'], ans:1, exp:'Polymorphism refers to the ability of a solid material to exist in more than one crystal form. Different polymorphs may have different solubility and bioavailability.'},
+          {q:'Phase diagrams can predict drug solubility boundaries to help formulators:', opts:['Choose the best colour for the product','Identify conditions where the drug remains fully dissolved and avoid precipitation','Determine drug molecular weight','Predict drug half-life'], ans:1, exp:'Phase diagrams show the solubility region of a drug in a solvent, allowing formulators to design conditions that prevent precipitation during storage.'},
+          {q:'Which feature of a phase diagram shows the unique point where all three phases coexist?', opts:['Melting curve','Vaporisation curve','Sublimation curve','Triple point'], ans:3, exp:'The triple point is the unique temperature and pressure where solid, liquid, and vapour all coexist in equilibrium.'},
+          {q:'The area labelled "solid" on a one-component phase diagram represents:', opts:['Conditions where liquid and vapour coexist','Conditions of T and P where only the solid phase is stable','The triple point','The vaporisation curve'], ans:1, exp:'The solid area (region COB) on the phase diagram shows all T-P conditions where the solid phase alone is the stable state.'},
+          {q:'For a two-component (binary) system, the maximum degrees of freedom when only one phase is present is:', opts:['1','2','3','4'], ans:2, exp:'F = 2 - 1 + 2 = 3 (temperature, pressure, and composition of one component must all be specified for a single-phase binary system).'},
+          {q:'In a condensed two-component system (F\' = C - P + 1) with two phases (P=2), F\' =:', opts:['0','1','2','3'], ans:1, exp:'F\' = 2 - 2 + 1 = 1. Only one variable (e.g., temperature or composition) needs to be specified for a two-phase binary condensed system.'},
+          {q:'What does the "metastable" region on a phase diagram indicate?', opts:['A region where the system is thermodynamically stable','A region where a phase persists beyond its normal equilibrium boundary (e.g., supercooling or supersaturation)','A region with maximum degrees of freedom','A region where all three phases coexist'], ans:1, exp:'Metastable regions represent conditions where a phase persists beyond its equilibrium boundary — e.g., supercooled liquid water below 0°C, or supersaturated solutions.'},
+          {q:'Eutectic systems in pharmacy involve two-component phase diagrams where:', opts:['Both components are gases at room temperature','A mixture exists that melts at the lowest possible temperature (eutectic point) among all compositions','Both components are insoluble in each other','The melting point is always above 200°C'], ans:1, exp:'A eutectic point is the composition and temperature at which a binary mixture melts at the lowest possible temperature — important in solid dispersion and freeze-drying formulations.'},
+          {q:'A saturated solution of sodium chloride in contact with excess solid NaCl is a _______ system with _______ phases.', opts:['1-component, 1-phase','2-component, 2-phase (solid NaCl and saturated solution)','1-component, 2-phase','2-component, 1-phase'], ans:1, exp:'NaCl + H2O = 2 components; saturated solution (liquid phase) + undissolved solid NaCl (solid phase) = 2 phases.'},
+          {q:'Phase diagrams in drug formulation help with "enhancing stability" by:', opts:['Replacing all excipients with inert materials','Revealing T and moisture conditions where formulations are stable and identifying destabilising phase transitions','Removing all solvents','Increasing drug concentration above solubility limit'], ans:1, exp:'Phase diagrams identify stability windows (regions of T and composition) where a formulation remains single-phase and stable, avoiding hydration, crystallisation, or phase separation.'},
+          {q:'Applying the phase rule to a one-component three-phase system (e.g., the triple point): F =', opts:['3','2','1','0'], ans:3, exp:'F = 1 - 3 + 2 = 0. The system is invariant — all variables are fixed at the triple point.'},
+          {q:'A pure substance in a single physical state (e.g., liquid water only) has degrees of freedom F =:', opts:['0','1','2','3'], ans:2, exp:'F = 1 (C) - 1 (P) + 2 = 2. Both temperature and pressure can be independently varied while maintaining the single liquid phase.'},
+          {q:'Condensed phase rule applications in pharmacy are important because:', opts:['Drug formulations are rarely affected by pressure','Most pharmaceutical formulations are solids or liquids handled at atmospheric pressure — pressure is essentially fixed','Temperature is irrelevant in pharmacy','Drug stability is independent of composition'], ans:1, exp:'Pharmaceutical solids, semisolids, and liquids are typically processed and stored at atmospheric pressure, making the condensed phase rule (F\' = C - P + 1) directly applicable.'},
+          {q:'The solid-state characterisation of drugs using phase diagrams helps:', opts:['Determine drug receptor binding','Predict which polymorphic form is stable under specific T and P conditions for optimal dissolution and bioavailability','Calculate drug clearance','Determine protein binding'], ans:1, exp:'Phase diagrams guide selection of the most stable and bioavailable polymorph for drug development by mapping stability regions of each crystal form.'},
+          {q:'A gaseous mixture of O2 and N2 consists of:', opts:['2 phases and 2 components','1 phase and 2 components','2 phases and 1 component','1 phase and 1 component'], ans:1, exp:'All gases mix freely to form one homogeneous phase. O2 + N2 = 2 components, 1 phase.'},
+          {q:'The formulation of combination drugs benefits from phase diagrams by:', opts:['Reducing the number of active ingredients','Mapping interactions between components to avoid incompatibilities and optimise co-formulation','Increasing manufacturing cost','Eliminating the need for stability testing'], ans:1, exp:'Phase diagrams of multi-component systems map interactions, identify incompatibility regions, and guide formulation of stable, effective combination drug products.'},
+          {q:'In the phase diagram, along a two-phase equilibrium curve (e.g., vaporisation curve), F =:', opts:['0','1','2','3'], ans:1, exp:'Along any two-phase curve: F = 1 - 2 + 2 = 1 (univariant). Specifying temperature fixes pressure, or vice versa.'},
+          {q:'The phase rule helps formulators optimise drug delivery by:', opts:['Calculating drug dose','Understanding how temperature and formulation composition affect phase behaviour of polymeric drug delivery systems','Predicting immune responses','Determining drug-receptor affinity'], ans:1, exp:'Understanding phase transitions in polymer-drug systems (e.g., PLGA microspheres, lipid nanoparticles) guides optimisation of drug release profiles using phase diagrams.'},
+          {q:'For a two-component condensed system at the eutectic point (P=2 phases), F\' =:', opts:['0','1','2','3'], ans:0, exp:'At the eutectic point of a two-component condensed system: F\' = 2 - 2 + 1 = 1. Wait — actually at the eutectic (invariant in condensed sense) P=3 (two solids + melt): F\' = 2 - 3 + 1 = 0. The system is invariant at the eutectic point.'},
+        ]
+      },
+      {
+        title:'Size Reduction and Milling',
+        file:'https://docs.google.com/presentation/d/1OI7f-J3Oy1kC_St4LZkOe08ouonm8i_8/edit?usp=drive_link&ouid=116729636206238336340&rtpof=true&sd=true',
+        questions:[
+      {q:'Size reduction is also known as:', opts:['Filtration','Comminution','Distillation','Evaporation'], ans:1, exp:'Size reduction in pharmaceutics is called comminution.'},
+      {q:'Another term for size reduction is:', opts:['Crystallization','Milling','Sedimentation','Adsorption'], ans:1, exp:'Milling is another common term for size reduction.'},
+      {q:'The main purpose of size reduction is to:', opts:['Reduce temperature','Increase surface area','Increase viscosity','Reduce solubility'], ans:1, exp:'Size reduction increases surface area for faster dissolution.'},
+      {q:'Increase in surface area leads to:', opts:['Decreased absorption','Increased dissolution rate','Reduced bioavailability','Increased density'], ans:1, exp:'More surface area generally increases dissolution rate.'},
+      {q:'Size reduction improves:', opts:['Sedimentation rate','Dissolution rate','Drug instability','Moisture content'], ans:1, exp:'Size reduction improves dissolution rate of powders.'},
+      {q:'Which of the following is easier after size reduction?', opts:['Heating','Mixing of powders','Filtration','Distillation'], ans:1, exp:'Smaller particles mix more uniformly.'},
+      {q:'Ophthalmic preparations must be:', opts:['Coarse','Sticky','Free from gritty particles','Highly viscous'], ans:2, exp:'Ophthalmics must be free from gritty particles.'},
+      {q:'Size reduction increases:', opts:['Emulsion instability','Emulsion stability','Particle weight','Temperature'], ans:1, exp:'Fine particles can improve emulsion stability.'},
+      {q:'Which is NOT a factor affecting size reduction?', opts:['Hardness','Colour','Fibrous nature','Stickiness'], ans:1, exp:'Colour is not a principal factor in size reduction difficulties.'},
+      {q:'Materials that resist breaking are:', opts:['Friable','Hard','Hygroscopic','Solvated'], ans:1, exp:'Hard materials resist size reduction better than friable ones.'},
+      {q:'Fibrous materials include:', opts:['Metals','Plants','Liquids','Gases'], ans:1, exp:'Many fibrous materials are plant-derived.'},
+      {q:'Friable materials are:', opts:['Hard','Easily broken','Sticky','Elastic'], ans:1, exp:'Friable materials break easily under force.'},
+      {q:'Hygroscopic materials:', opts:['Absorb moisture','Repel water','Conduct heat','Reflect light'], ans:0, exp:'Hygroscopic materials absorb water from the environment.'},
+      {q:'Thermolabile materials are:', opts:['Heat resistant','Heat sensitive','Moisture resistant','Stable'], ans:1, exp:'Thermolabile means sensitive to heat.'},
+      {q:'One advantage of size reduction is:', opts:['Drug degradation','Uniform mixing','Contamination','Reduced solubility'], ans:1, exp:'Uniform mixing is an advantage of reducing particle size.'},
+      {q:'Size reduction reduces:', opts:['Dissolution rate','Sedimentation rate','Surface area','Absorption'], ans:1, exp:'Smaller particles settle slower, reducing sedimentation.'},
+      {q:'A disadvantage of size reduction is:', opts:['Improved mixing','Drug degradation','Increased stability','Uniform flow'], ans:1, exp:'Size reduction may increase drug degradation risk.'},
+      {q:'A mill consists of:', opts:['Hopper, chamber, receiver','Filter, pump, pipe','Tank, heater, condenser','Mixer, dryer, separator'], ans:0, exp:'Basic milling equipment includes hopper, chamber, receiver.'},
+      {q:'The part where material enters is:', opts:['Receiver','Hopper','Chamber','Outlet'], ans:1, exp:'Material enters through the hopper.'},
+      {q:'Cutting mechanism is used for:', opts:['Liquids','Fibrous materials','Gases','Powders'], ans:1, exp:'Cutting mechanisms are effective on fibrous solids.'},
+      {q:'Rotary cutter mill uses:', opts:['Compression','Impact','Cutting','Attrition'], ans:2, exp:'Rotary cutter mills apply cutting action.'},
+      {q:'Roller mill works by:', opts:['Impact','Compression','Cutting','Filtration'], ans:1, exp:'Roller mills reduce size by compression between rollers.'},
+      {q:'Hammer mill works by:', opts:['Compression','Impact','Drying','Mixing'], ans:1, exp:'Hammer mills use impact energy to pulverize material.'},
+      {q:'Ball mill uses:', opts:['Cutting','Impact and attrition','Filtration','Heating'], ans:1, exp:'Ball mills reduce size by impact and attrition.'},
+      {q:'Fluid energy mill is suitable for:', opts:['Hard materials','Thermolabile materials','Liquids','Fibrous materials'], ans:1, exp:'Fluid energy mills are good for thermolabile materials due to low heat build-up.'},
+      {q:'Coarse powder passes through:', opts:['No 120 sieve','No 10 sieve','No 85 sieve','No 44 sieve'], ans:1, exp:'Coarse powders are defined by passing a low-number sieve like No.10.'},
+      {q:'Fine powder passes through:', opts:['No 85 sieve','No 10 sieve','No 22 sieve','No 60 sieve'], ans:0, exp:'Fine powder generally passes through No.85 sieve.'},
+      {q:'Very fine powder passes through:', opts:['No 44','No 85','No 120','No 10'], ans:2, exp:'Very fine powder passes through No.120 sieve.'},
+      {q:'Sieving is also called:', opts:['Mixing','Sifting','Heating','Drying'], ans:1, exp:'Sieving is the process of sifting.'},
+      {q:'Sieve materials include:', opts:['Wood','Copper alloy','Plastic only','Rubber'], ans:1, exp:'Sieve frames often use copper alloys or stainless steel.'},
+      {q:'Stainless steel sieves are used because:', opts:['They rust easily','They are durable','They melt easily','They absorb water'], ans:1, exp:'Stainless steel is durable and resists corrosion.'},
+      {q:'Nylon sieve is:', opts:['Metallic','Non-metallic','Liquid','Solid'], ans:1, exp:'Nylon is a non-metallic sieve material.'},
+      {q:'Increase in particle size causes:', opts:['Faster dissolution','Slower dissolution','No change','Instant absorption'], ans:1, exp:'Larger particles dissolve slower due to lower surface area.'},
+      {q:'Size reduction improves:', opts:['Drug extraction','Drug loss','Drug contamination','Drug instability'], ans:0, exp:'Size reduction can enhance drug extraction efficiency.'},
+      {q:'Which is NOT a mechanism of size reduction?', opts:['Cutting','Compression','Evaporation','Attrition'], ans:2, exp:'Evaporation is not a mechanical size reduction mechanism.'},
+      {q:'Attrition means:', opts:['Grinding by friction','Heating','Cooling','Filtering'], ans:0, exp:'Attrition is grinding by friction between particles or surfaces.'},
+      {q:'Impact mechanism involves:', opts:['Crushing','Sudden force','Heating','Mixing'], ans:1, exp:'Impact uses sudden force to break particles.'},
+      {q:'Compression mechanism involves:', opts:['Pressure','Heat','Cooling','Filtration'], ans:0, exp:'Compression works by pressing particles together.'},
+      {q:'Sticky materials are:', opts:['Easy to grind','Difficult to grind','Liquid','Gaseous'], ans:1, exp:'Sticky materials are harder to grind effectively.'},
+      {q:'Melting point affects:', opts:['Size reduction','Filtration','Distillation','Mixing'], ans:0, exp:'Melting point can influence heat-sensitive milling processes.'},
+      {q:'Solvated materials:', opts:['Contain solvent','Are dry','Are solid','Are gaseous'], ans:0, exp:'Solvated materials contain solvent molecules.'},
+      {q:'Milling chamber is:', opts:['Entry point','Grinding area','Exit point','Storage'], ans:1, exp:'The milling chamber is where grinding occurs.'},
+      {q:'Discharge chute is:', opts:['Entry','Exit','Grinding','Heating'], ans:1, exp:'The discharge chute is the outlet for processed material.'},
+      {q:'Uniform flow is an:', opts:['Advantage','Disadvantage','Factor','Error'], ans:0, exp:'Uniform flow is an advantage in powder processing.'},
+      {q:'Drug degradation is:', opts:['Advantage','Disadvantage','Neutral','Process'], ans:1, exp:'Drug degradation is an undesirable disadvantage.'},
+      {q:'Contamination is:', opts:['Advantage','Disadvantage','Factor','Mechanism'], ans:1, exp:'Contamination is a disadvantage in pharmaceutical comminution.'},
+      {q:'Grinding is:', opts:['Mixing','Size reduction','Filtration','Drying'], ans:1, exp:'Grinding is a type of size reduction.'},
+      {q:'Milling improves:', opts:['Stability','Instability','Moisture','Heat'], ans:0, exp:'Milling can improve stability and homogeneity.'},
+      {q:'Sedimentation rate decreases with:', opts:['Large particles','Small particles','Liquids','Heat'], ans:1, exp:'Smaller particles settle slower, reducing sedimentation.'},
+      {q:'Bioavailability increases with:', opts:['Large size','Small size','Heat','Moisture'], ans:1, exp:'Smaller particle size usually increases bioavailability.'},
+        ]
+      }
+    ]
+  }
+};
+
+let selectedSubject = 'pio';
+let selectedHandoutIdx = 0;
+let currentHandoutTitle = '';
+let currentQuestions = SUBJECTS.pio.handouts[0].questions;
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function show(s){
+  document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));
+  document.getElementById('screen-'+s).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function switchLoginTab(type,el){
+  document.querySelectorAll('#screen-login .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); loginMode=type;
+}
+
+function showToast(msg,ms=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),ms);
+}
+
+// ════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ════════════════════════════════════════════
+document.addEventListener('keydown', function(e){
+  const activeScreen = document.querySelector('.screen.active');
+  const screenId = activeScreen ? activeScreen.id : '';
+
+  // ── Login screen: Enter to sign in ──
+  if(screenId === 'screen-login'){
+    if(e.key === 'Enter') doLogin();
+    return;
+  }
+
+  // ── Quiz screen shortcuts ──
+  if(screenId === 'screen-quiz'){
+    const tag = document.activeElement ? document.activeElement.tagName : '';
+    if(tag === 'INPUT' || tag === 'TEXTAREA') return; // don't intercept typing
+
+    const opts = document.querySelectorAll('.option');
+    const numOpts = opts.length;
+
+    // A B C D pick options
+    const keyMap = { 'a':0, 'b':1, 'c':2, 'd':3 };
+    if(e.key.toLowerCase() in keyMap){
+      const idx = keyMap[e.key.toLowerCase()];
+      if(idx < numOpts) pick(idx);
+      return;
+    }
+
+    // Enter or Right arrow → Next / Submit
+    if(e.key === 'Enter' || e.key === 'ArrowRight'){
+      const nextBtn = document.getElementById('q-next');
+      const finBtn  = document.getElementById('q-finish');
+      if(finBtn && finBtn.style.display !== 'none')  finBtn.click();
+      else if(nextBtn && nextBtn.style.display !== 'none') nextBtn.click();
+      return;
+    }
+
+    // Left arrow → Back
+    if(e.key === 'ArrowLeft'){
+      const backBtn = document.getElementById('q-back');
+      if(backBtn && backBtn.style.display !== 'none') backBtn.click();
+      return;
+    }
+  }
+});
+
+// ════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════
+async function doLogin(){
+  const id   = document.getElementById('login-id').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value.trim().toLowerCase();
+  const err  = document.getElementById('login-err');
+  const statusEl = document.getElementById('login-status');
+  const btn  = document.getElementById('login-btn');
+  err.style.display='none';
+  statusEl.style.display='block';
+  statusEl.textContent = loginMode === 'admin' ? 'Signing in as admin…' : 'Signing in…';
+  btn.innerHTML='<div class="loader"></div> Signing in…';
+  btn.disabled=true;
+
+  // Admin check
+  if(id===ADMIN_ID && pass===ADMIN_PASS){
+    statusEl.style.display='none';
+    btn.innerHTML='Sign in'; btn.disabled=false;
+    initAdminSheetLinks();
+    await loadStudents();
+    show('admin'); return;
+  }
+
+  // Student check via Apps Script when configured
+  let student = null;
+  const useLocal = SCRIPT_URL.includes('YOUR_APPS_SCRIPT_URL_HERE');
+
+  if(!useLocal){
+    try{
+      const res = await fetch(`${SCRIPT_URL}?action=login&matric=${encodeURIComponent(id)}&password=${encodeURIComponent(pass)}`);
+      const data = await res.json();
+      if(data.success){
+        student = data.student;
+      }
+    } catch(e){
+      // App Script unavailable, fallback to local
+    }
+  }
+
+  // Local fallback login (for testing/offline student)
+  if(!student){
+    const local = LOCAL_STUDENTS[id];
+    if(local && local.password === pass){
+      student = { matric: id, name: local.name };
+    }
+  }
+
+  if(student){
+    statusEl.style.display='none';
+    currentStudent = student;
+    const first = currentStudent.name.split(' ')[0];
+    document.getElementById('s-name').textContent = first;
+    document.getElementById('s-name-nav').textContent = first;
+    await refreshStats();
+    show('student');
+  } else {
+    statusEl.style.display='none';
+    err.style.display='block';
+  }
+
+  btn.innerHTML='Sign in'; btn.disabled=false;
+}
+
+function logout(){
+  currentStudent=null;
+  document.getElementById('login-id').value='';
+  document.getElementById('login-pass').value='';
+  show('login');
+}
+
+// ════════════════════════════════════════════
+// STUDENT STATS
+// ════════════════════════════════════════════
+async function refreshStats(){
+  if(!currentStudent) return;
+
+  // Always use local results as source of truth for instant UI update
+  let results = getLocalResults().filter(r=>r.matric===currentStudent.matric);
+
+  // Try to also pull from Google Sheets and merge (de-duplicate by submittedAt)
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=getStudentResults&matric=${encodeURIComponent(currentStudent.matric)}`);
+    const data = await res.json();
+    if(data && data.results && data.results.length > 0){
+      const sheetResults = data.results;
+      const localTimes = new Set(results.map(r=>r.submittedAt));
+      sheetResults.forEach(r=>{ if(!localTimes.has(r.submittedAt)) results.push(r); });
+    }
+  } catch{ /* offline, use local only */ }
+
+  const taken = results.length;
+  const avg = taken>0 ? Math.round(results.reduce((a,r)=>a+Number(r.score),0)/taken) : null;
+  document.getElementById('s-taken').textContent = taken;
+  document.getElementById('s-avg').textContent = avg!==null ? avg+'%' : '—';
+  // Count fully-completed subjects for pending stat
+  const completedSubjects = ['pio','bch','ana','pch','pcg','pct'].filter(sub=>{
+    const subjectHandouts = SUBJECTS[sub] ? SUBJECTS[sub].handouts.map(h=>h.title) : [];
+    const doneSet = new Set(results.filter(r=>r.subject===sub).map(r=>r.handout));
+    return subjectHandouts.length > 0 && subjectHandouts.every(t=>doneSet.has(t));
+  });
+  document.getElementById('s-pending').textContent = Math.max(0, 6 - completedSubjects.length);
+
+  // Mark subject Done only when ALL its handouts are completed, In Progress if some done
+  ['pio','bch','ana','pch','pcg','pct'].forEach(sub=>{
+    const b=document.getElementById(`${sub}-badge`);
+    if(!b) return;
+    const subjectHandouts = SUBJECTS[sub] ? SUBJECTS[sub].handouts.map(h=>h.title) : [];
+    const subResults = results.filter(r=>r.subject===sub);
+    const doneHandoutTitles = new Set(subResults.map(r=>r.handout));
+    const allDone = subjectHandouts.length > 0 && subjectHandouts.every(t=>doneHandoutTitles.has(t));
+    const someDone = subjectHandouts.some(t=>doneHandoutTitles.has(t));
+    if(allDone){
+      b.textContent='Done'; b.className='badge badge-success';
+    } else if(someDone){
+      b.textContent=doneHandoutTitles.size+'/'+subjectHandouts.length+' done'; b.className='badge badge-info';
+    } else {
+      b.textContent='Pending'; b.className='badge badge-warn';
+    }
+  });
+
+  // Render quiz history table
+  const histDiv = document.getElementById('quiz-history-table');
+  if(histDiv){
+    if(results.length===0){
+      histDiv.innerHTML='<p style="font-size:13px;color:var(--muted);">No quizzes taken yet.</p>';
+    } else {
+      histDiv.innerHTML=`<table class="admin-table">
+        <thead><tr><th>Subject</th><th>Handout</th><th>Score</th><th>Correct</th><th>Date</th></tr></thead>
+        <tbody>${results.map(r=>`<tr>
+          <td><span class="badge badge-info">${(SUBJECTS[r.subject]&&SUBJECTS[r.subject].code)||r.subject||'—'}</span></td>
+          <td style="font-size:13px;">${r.handout||'—'}</td>
+          <td><span class="badge ${Number(r.score)>=60?'badge-success':'badge-danger'}">${r.score}%</span></td>
+          <td style="color:var(--muted);">${r.correct}/${r.total}</td>
+          <td style="font-size:12px;color:var(--muted);">${r.submittedAt}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+    }
+  }
+}
+
+function openSubject(subj){
+  selectedSubject = subj;
+  selectedHandoutIdx = null;
+  const s = SUBJECTS[subj];
+  document.getElementById('handout-icon').textContent = s.icon;
+  document.getElementById('handout-subject').textContent = s.name;
+  document.getElementById('handout-desc').textContent = s.description;
+
+  // Determine which handouts the current student has already completed
+  const myResults = currentStudent
+    ? getLocalResults().filter(r => r.matric === currentStudent.matric && r.subject && r.subject.toLowerCase() === subj)
+    : [];
+  const doneHandouts = new Set(myResults.map(r => r.handout));
+
+  const list = document.getElementById('handouts-list');
+  list.innerHTML = s.handouts.map((h, i) => {
+    const done = doneHandouts.has(h.title);
+    const myBest = myResults.filter(r => r.handout === h.title);
+    const bestScore = myBest.length > 0 ? Math.max(...myBest.map(r => Number(r.score))) : null;
+    const locked = isQuizLocked(subj, h.title);
+    return `
+    <div class="card" style="margin-bottom:12px;${locked?'opacity:0.7;':''}">
+      <div class="handout-row">
+        <div class="handout-info">
+          <div class="handout-title">${h.title}${locked?' <span style="font-size:12px;">🔒</span>':''}</div>
+          <div class="handout-meta">${h.questions.length} questions · ${locked ? 'This quiz is currently locked by your lecturer' : 'Read the handout first, then take the quiz' + (bestScore!==null ? ' · Best: '+bestScore+'%' : '')}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          ${locked
+            ? '<span class="badge badge-danger">Locked</span><button class="btn" style="font-size:13px;padding:8px 16px;opacity:0.5;cursor:not-allowed;" disabled>Not available</button>'
+            : `<span class="badge ${done ? 'badge-success' : 'badge-warn'}">${done ? 'Done' : 'Pending'}</span>
+               <button class="btn btn-primary" style="font-size:13px;padding:8px 16px;" onclick="openHandout(${i})">${done ? 'Retake' : 'Open'}</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  show('handouts');
+}
+
+function openHandout(idx){
+  selectedHandoutIdx = idx;
+  const s = SUBJECTS[selectedSubject];
+  const h = s.handouts[idx];
+  document.getElementById('viewer-code').textContent = s.code;
+  document.getElementById('viewer-title').textContent = h.title;
+  document.getElementById('viewer-desc').textContent = `Read the full handout below, then take the quiz when ready.`;
+  document.getElementById('viewer-toolbar').textContent = `📄 ${s.code} — ${h.title}`;
+  // Convert file link to embeddable preview URL if it's a Drive file
+  let embedUrl = h.file;
+  const fileMatch = h.file.match(/\/file\/d\/([^/]+)/);
+  const folderMatch = h.file.match(/\/folders\/([^?]+)/);
+  if(fileMatch) embedUrl = `https://drive.google.com/file/d/${fileMatch[1]}/preview`;
+  else if(folderMatch) embedUrl = h.file;
+  document.getElementById('viewer-link').href = h.file;
+  document.getElementById('viewer-frame').src = embedUrl;
+  document.getElementById('viewer-questions').textContent = `${h.questions.length} questions`;
+  show('viewer');
+}
+
+function beginQuiz(){
+  const h = SUBJECTS[selectedSubject].handouts[selectedHandoutIdx];
+  if(isQuizLocked(selectedSubject, h.title)){
+    showToast('🔒 This quiz is locked by your lecturer');
+    return;
+  }
+  curQ = 0;
+  currentHandoutTitle = h.title;
+  currentQuestions = h.questions;
+  answers = new Array(currentQuestions.length).fill(null);
+  answered = false;
+  renderQ();
+  show('quiz');
+}
+
+function renderQ(){
+  const q = currentQuestions[curQ];
+  const s = SUBJECTS[selectedSubject];
+  document.getElementById('q-subject-label').textContent = s.code + ' · ' + (currentHandoutTitle||'');
+  const tot = currentQuestions.length;
+  const pct = Math.round(((curQ+1)/tot)*100);
+  document.getElementById('q-counter').textContent = `Q ${curQ+1} / ${tot}`;
+  document.getElementById('q-prog').style.width = pct+'%';
+  document.getElementById('q-pct').textContent = pct+'%';
+  document.getElementById('q-text').textContent = q.q;
+  answered = false;
+  document.getElementById('q-exp').style.display = 'none';
+  document.getElementById('q-opts').innerHTML = q.opts.map((o,i)=>
+    `<div class="option" id="o${i}" onclick="pick(${i})">${String.fromCharCode(65+i)}. ${o}</div>`
+  ).join('');
+  // Restore previous answer if student came back
+  const prev = answers[curQ];
+  if(prev !== null && prev !== undefined){
+    answered = true;
+    document.querySelectorAll('.option').forEach((el,idx)=>{
+      el.classList.add('locked');
+      if(idx===prev) el.classList.add('selected');
+    });
+    const isLast = curQ===currentQuestions.length-1;
+    document.getElementById('q-next').style.display=(!isLast)?'inline-flex':'none';
+    document.getElementById('q-finish').style.display=isLast?'inline-flex':'none';
+  } else {
+    document.getElementById('q-next').style.display='none';
+    document.getElementById('q-finish').style.display='none';
+  }
+  // Show/hide Back button
+  const backBtn=document.getElementById('q-back');
+  if(backBtn) backBtn.style.display=curQ>0?'inline-flex':'none';
+}
+
+function pick(i){
+  // Allow changing answer — always reset and re-select
+  answers[curQ]=i;
+  answered=true;
+  document.querySelectorAll('.option').forEach((el,idx)=>{
+    el.classList.remove('locked','selected');
+    el.classList.add('locked');
+    if(idx===i) el.classList.add('selected');
+  });
+  const isLast=curQ===currentQuestions.length-1;
+  document.getElementById('q-next').style.display=(!isLast)?'inline-flex':'none';
+  document.getElementById('q-finish').style.display=isLast?'inline-flex':'none';
+  // Show Back button if not on first question
+  const backBtn=document.getElementById('q-back');
+  if(backBtn) backBtn.style.display=curQ>0?'inline-flex':'none';
+}
+
+function prevQ(){
+  if(curQ>0){ curQ--; renderQ(); }
+}
+
+function nextQ(){
+  if(!answered){ showToast('Please select an answer first'); return; }
+  curQ++; renderQ();
+}
+
+async function finishQuiz(){
+  let correct=0;
+  currentQuestions.forEach((q,i)=>{ if(answers[i]===q.ans) correct++; });
+  const total = currentQuestions.length;
+  const pct = Math.round((correct/total)*100);
+
+  document.getElementById('r-score').textContent=pct+'%';
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=total-correct;
+  document.getElementById('r-total').textContent=total;
+  document.getElementById('r-emoji').textContent=pct>=80?'🏆':pct>=60?'👍':'💪';
+  document.getElementById('r-label').textContent=
+    pct>=80?'Outstanding! Excellent performance.' :
+    pct>=60?'Good effort — review what you missed and try again.' :
+    'Keep studying — every attempt makes you stronger!';
+
+  // Build answer review
+  const reviewDiv = document.getElementById('r-review');
+  if(reviewDiv){
+    reviewDiv.innerHTML = currentQuestions.map((q,i)=>{
+      const chosen = answers[i];
+      const isCorrect = chosen === q.ans;
+      const chosenLabel = chosen !== null ? String.fromCharCode(65+chosen)+'. '+q.opts[chosen] : 'Not answered';
+      const correctLabel = String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans];
+      return `<div class="review-item ${isCorrect?'rev-correct':'rev-wrong'}">
+        <div class="review-q">${i+1}. ${q.q}</div>
+        <div class="review-ans" style="color:${isCorrect?'var(--green)':'var(--red)'}">
+          ${isCorrect?'✅':'❌'} Your answer: ${chosenLabel}
+        </div>
+        ${!isCorrect?'<div class="review-ans" style="color:var(--green)">✅ Correct answer: '+correctLabel+'</div>':''}
+        <div class="review-exp">💡 ${q.exp}</div>
+      </div>`;
+    }).join('');
+  }
+
+  if(currentStudent){
+    // ALWAYS save locally first so dashboard always reflects the result
+    const payload = {
+      studentName: currentStudent.name,
+      matric: currentStudent.matric,
+      subject: selectedSubject,
+      handout: currentHandoutTitle,
+      score: pct,
+      correct,
+      total,
+      submittedAt: new Date().toLocaleString('en-NG')
+    };
+    addLocalResult(payload);
+    await refreshStats();
+
+    // Then try to sync to Google Sheets in the background
+    try{
+      const _sp = new URLSearchParams({ action:'saveResult', ...payload });
+      const res = await fetch(SCRIPT_URL + '?' + _sp.toString());
+      const data = await res.json().catch(()=>({}));
+      if(data && data.success){
+        showToast('Score saved to Google Sheets ✓');
+      } else {
+        showToast('Score saved locally ✓');
+      }
+    } catch{
+      showToast('Score saved locally ✓');
+    }
+  } else {
+    showToast('Please log in to save your score.');
+  }
+  show('result');
+}
+
+// ════════════════════════════════════════════
+// ADMIN
+// ════════════════════════════════════════════
+// ════════════════════════════════════════════
+// QUIZ LOCK/UNLOCK
+// ════════════════════════════════════════════
+function getQuizLocks(){
+  return JSON.parse(localStorage.getItem(QUIZ_LOCKS_KEY) || '{}');
+}
+function setQuizLocks(locks){
+  localStorage.setItem(QUIZ_LOCKS_KEY, JSON.stringify(locks));
+}
+function isQuizLocked(subjectKey, handoutTitle){
+  const locks = getQuizLocks();
+  const lockId = subjectKey + '::' + handoutTitle;
+  return locks[lockId] === true;
+}
+function toggleQuizLock(subjectKey, handoutTitle){
+  const locks = getQuizLocks();
+  const lockId = subjectKey + '::' + handoutTitle;
+  locks[lockId] = !locks[lockId];
+  setQuizLocks(locks);
+  renderQuizLockTable();
+  showToast(locks[lockId] ? '🔒 Quiz locked' : '🔓 Quiz unlocked');
+}
+function lockAllQuizzes(){
+  const locks = {};
+  Object.keys(SUBJECTS).forEach(sub=>{
+    SUBJECTS[sub].handouts.forEach(h=>{ locks[sub+'::'+h.title]=true; });
+  });
+  setQuizLocks(locks);
+  renderQuizLockTable();
+  showToast('🔒 All quizzes locked');
+}
+function unlockAllQuizzes(){
+  setQuizLocks({});
+  renderQuizLockTable();
+  showToast('🔓 All quizzes unlocked');
+}
+function renderQuizLockTable(){
+  const locks = getQuizLocks();
+  const tbody = document.getElementById('quiz-lock-body');
+  if(!tbody) return;
+  let rows = '';
+  Object.keys(SUBJECTS).forEach(sub=>{
+    const s = SUBJECTS[sub];
+    s.handouts.forEach((h,i)=>{
+      const lockId = sub+'::'+h.title;
+      const locked = locks[lockId]===true;
+      rows += `<tr>
+        <td><span class="badge badge-info">${s.code}</span></td>
+        <td style="font-weight:500;font-size:13px;">${h.title}</td>
+        <td style="color:var(--muted);">${h.questions.length}</td>
+        <td><span class="badge ${locked?'badge-danger':'badge-success'}">${locked?'🔒 Locked':'🔓 Unlocked'}</span></td>
+        <td>
+          <button class="btn ${locked?'btn-success':'btn-danger'}" style="font-size:12px;padding:5px 14px;"
+            onclick="toggleQuizLock('${sub}','${h.title.replace(/'/g,"\'")}')">${locked?'Unlock':'Lock'}</button>
+        </td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = rows;
+}
+
+function adminTab(tab,el){
+  document.querySelectorAll('#screen-admin .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['students','results','sheets','quizzes'].forEach(t=>{
+    document.getElementById('at-'+t).style.display=t===tab?'block':'none';
+  });
+  if(tab==='results') loadResults();
+  if(tab==='students') loadStudents();
+  if(tab==='quizzes') renderQuizLockTable();
+}
+
+function initAdminSheetLinks(){
+  document.getElementById('students-sheet-link').href=
+    'https://docs.google.com/spreadsheets/d/1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I/edit?gid=737598935#gid=737598935';
+  document.getElementById('results-sheet-link').href=
+    'https://docs.google.com/spreadsheets/d/1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I/edit?gid=1454402296#gid=1454402296';
+  document.getElementById('script-url-display').textContent=SCRIPT_URL;
+}
+
+async function loadStudents(){
+  const tbody=document.getElementById('students-body');
+  try{
+    const res=await fetch(`${SCRIPT_URL}?action=getStudents`);
+    const data=await res.json();
+    const students=data.students||[];
+    document.getElementById('student-count').textContent=`${students.length} student${students.length!==1?'s':''} registered`;
+    if(students.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No students yet. Add one above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=students.map((s,i)=>`
+      <tr>
+        <td style="color:var(--muted);">${i+1}</td>
+        <td style="font-weight:500;">${s.name}</td>
+        <td style="color:var(--muted);font-family:monospace;">${s.matric}</td>
+        <td style="color:var(--muted);">${s.password}</td>
+        <td style="color:var(--muted);">${s.email||'—'}</td>
+        <td><button class="btn btn-danger" style="font-size:12px;padding:5px 12px;" onclick="deleteStudent('${s.matric}','${s.name}')">Remove</button></td>
+      </tr>
+    `).join('');
+  } catch{
+    const students = getLocalStudents();
+    document.getElementById('student-count').textContent=`${students.length} student${students.length!==1?'s':''} registered`;
+    if(students.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No students yet. Add one above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=students.map((s,i)=>`
+      <tr>
+        <td style="color:var(--muted);">${i+1}</td>
+        <td style="font-weight:500;">${s.name}</td>
+        <td style="color:var(--muted);font-family:monospace;">${s.matric}</td>
+        <td style="color:var(--muted);">${s.password}</td>
+        <td style="color:var(--muted);">${s.email||'—'}</td>
+        <td><button class="btn btn-danger" style="font-size:12px;padding:5px 12px;" onclick="deleteStudent('${s.matric}','${s.name}')">Remove</button></td>
+      </tr>
+    `).join('');
+  }
+}
+
+async function loadResults(){
+  const tbody=document.getElementById('results-body');
+  try{
+    const res=await fetch(`${SCRIPT_URL}?action=getResults`);
+    const data=await res.json();
+    const results=data.results||[];
+    if(results.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No submissions yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=results.map(r=>`
+      <tr>
+        <td style="font-weight:500;">${r.studentName}</td>
+        <td style="color:var(--muted);font-family:monospace;font-size:13px;">${r.matric}</td>
+        <td>${r.subject}</td>
+        <td><span class="badge ${Number(r.score)>=60?'badge-success':'badge-danger'}">${r.score}%</span></td>
+        <td>${r.correct} / ${r.total}</td>
+        <td style="font-size:12px;color:var(--muted);">${r.submittedAt}</td>
+      </tr>
+    `).join('');
+  } catch{
+    const results = getLocalResults();
+    if(results.length===0){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">No submissions yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=results.map(r=>`
+      <tr>
+        <td style="font-weight:500;">${r.studentName}</td>
+        <td style="color:var(--muted);font-family:monospace;font-size:13px;">${r.matric}</td>
+        <td>${r.subject}</td>
+        <td><span class="badge ${Number(r.score)>=60?'badge-success':'badge-danger'}">${r.score}%</span></td>
+        <td>${r.correct} / ${r.total}</td>
+        <td style="font-size:12px;color:var(--muted);">${r.submittedAt}</td>
+      </tr>
+    `).join('');
+  }
+}
+
+function toggleAddForm(){
+  const f=document.getElementById('add-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+
+async function addStudent(){
+  const name   = document.getElementById('new-name').value.trim();
+  const matric = document.getElementById('new-matric').value.trim();
+  const pass   = document.getElementById('new-pass').value.trim();
+  const email  = document.getElementById('new-email').value.trim();
+  if(!name||!matric||!pass){ showToast('Please fill in name, matric and password'); return; }
+  try{
+    const _ap = new URLSearchParams({action:'addStudent',name,matric,password:pass,email});
+    await fetch(SCRIPT_URL+'?'+_ap.toString());
+    showToast(`${name} added successfully ✓`);
+    toggleAddForm();
+    ['new-name','new-matric','new-pass','new-email'].forEach(id=>document.getElementById(id).value='');
+    await loadStudents();
+  } catch{
+    addLocalStudent({name,matric,password:pass,email});
+    showToast(`${name} added locally ✓`);
+    toggleAddForm();
+    ['new-name','new-matric','new-pass','new-email'].forEach(id=>document.getElementById(id).value='');
+    await loadStudents();
+  }
+}
+
+async function deleteStudent(matric,name){
+  if(!confirm(`Remove ${name} from the platform?`)) return;
+  try{
+    const _dp = new URLSearchParams({action:'deleteStudent',matric});
+    await fetch(SCRIPT_URL+'?'+_dp.toString());
+    showToast(`${name} removed`);
+    await loadStudents();
+  } catch{
+    const students = getLocalStudents().filter(s=>s.matric!==matric);
+    setLocalStudents(students);
+    showToast(`${name} removed locally`);
+    await loadStudents();
+  }
+}
+</script>
+</body>
+</html>

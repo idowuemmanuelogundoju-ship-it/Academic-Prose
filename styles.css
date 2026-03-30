@@ -1,0 +1,154 @@
+* { box-sizing: border-box; }
+
+/* Remove global background */
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+  background: none;
+  color: #111827;
+}
+
+/* Apply background ONLY to login page */
+.login-page {
+  background: #eef2ff;
+  min-height: 100vh;
+}
+
+/* Layout */
+.app-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Header (keep gradient if you want visual identity) */
+header {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: linear-gradient(90deg,#4338ca,#7c3aed);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+header h1 { margin: 0; font-size: 1.45rem; }
+header p { margin: 4px 0 0; opacity: .9; }
+
+.user-status {
+  font-size: .85rem;
+  color: #f3f4f6;
+}
+
+/* Remove panel background */
+.panel {
+  background: transparent;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: none;
+  margin-bottom: 16px;
+}
+
+/* Visibility helpers */
+.hidden { display: none; }
+.visible { display: block; }
+
+/* Forms */
+form {
+  display: grid;
+  gap: 10px;
+}
+
+input, select, button {
+  font: inherit;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  background: #4f46e5;
+  color: #fff;
+  border: 0;
+}
+
+button.small-btn {
+  background: transparent;
+  color: #111827;
+  border: 1px solid #d1d5db;
+}
+
+/* Layout helpers */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Remove card backgrounds */
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+}
+
+.card button {
+  background: #2563eb;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* Remove handout background */
+.handout-content {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+/* Quiz */
+.quiz-panel {
+  margin-top: 16px;
+}
+
+.quiz-form > .quiz-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: transparent;
+}
+
+.quiz-item label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+/* Messages */
+.message {
+  margin-top: 6px;
+  color: #991b1b;
+}
+
+.message.success {
+  color: #065f46;
+}
