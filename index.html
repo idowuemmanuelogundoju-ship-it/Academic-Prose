@@ -131,6 +131,41 @@
       .viewer-frame{height:400px;}
       .admin-table th,.admin-table td{padding:8px 10px;}
     }
+    /* Enhanced mobile responsiveness */
+    @media (max-width: 768px) {
+      body { font-size: 14px; }
+      .page, .page-wide { padding: 1rem; max-width: 100%; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .stat-card { padding: 12px; }
+      .stat-num { font-size: 20px; }
+      .stat-label { font-size: 12px; }
+      .subjects-grid { grid-template-columns: 1fr; gap: 12px; }
+      .subject-card { padding: 16px; min-height: 80px; }
+      .subject-icon { font-size: 24px; }
+      .subject-title { font-size: 16px; }
+      .subject-meta { font-size: 13px; }
+      .btn { min-height: 44px; padding: 12px 16px; font-size: 14px; }
+      .form-input { min-height: 44px; font-size: 16px; } /* Prevents zoom on iOS */
+      .card { padding: 16px; }
+      .nav { padding: 12px 16px; }
+      .nav-logo { font-size: 14px; }
+      .tabs { gap: 8px; }
+      .tab { padding: 8px 12px; font-size: 13px; }
+      .quiz-grid { grid-template-columns: 1fr; gap: 16px; }
+      .option { padding: 16px; font-size: 14px; min-height: 48px; }
+      .viewer-frame { height: 300px; }
+      .admin-table { font-size: 12px; }
+      .admin-table th, .admin-table td { padding: 8px; }
+      .info-box { padding: 12px; font-size: 12px; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card { text-align: center; }
+      .subjects-grid { grid-template-columns: 1fr; }
+      .subject-card { padding: 12px; }
+      .quiz-progress { margin-bottom: 16px; }
+      .q-text { font-size: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -140,31 +175,84 @@
 <!-- ══════════════════════════════════════
      LOGIN
 ══════════════════════════════════════ -->
-<div id="screen-login" class="screen active">
+<div id="screen-login" class="screen active login-page">
   <div class="page" style="max-width:420px;padding-top:3rem;">
+    
+    <!-- HEADER / BRAND -->
     <div style="text-align:center;margin-bottom:2rem;">
-      <div style="width:60px;height:60px;background:var(--blue-lt);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;">💊</div>
-      <h1 style="font-size:26px;font-weight:700;">Academic Prose Pharmacy Learning</h1>
-      <p style="font-size:14px;color:var(--muted);margin-top:5px;">OOU · 200 Level Pharmacy · Quiz Portal</p>
-    </div>
-    <div class="card">
-      <div class="tabs" style="margin-bottom:1.25rem;">
-        <div class="tab active" onclick="switchLoginTab('student',this)">Student login</div>
-        <div class="tab" onclick="switchLoginTab('admin',this)">Admin login</div>
+      <div style="width:60px;height:60px;background:var(--blue-lt);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px;">
+        💊
       </div>
+      <h1 style="font-size:26px;font-weight:700;">
+        Academic Prose Pharmacy Learning
+      </h1>
+      <p style="font-size:14px;color:var(--muted);margin-top:5px;">
+        OOU · 200 Level Pharmacy · Quiz Portal
+      </p>
+    </div>
+
+    <!-- LOGIN CARD -->
+    <div class="card">
+      
+      <!-- TABS -->
+      <div class="tabs" style="margin-bottom:1.25rem;">
+        <div class="tab active" onclick="switchLoginTab('student',this)">
+          Student login
+        </div>
+        <div class="tab" onclick="switchLoginTab('admin',this)">
+          Admin login
+        </div>
+      </div>
+
+      <!-- FORM -->
       <div style="display:flex;flex-direction:column;gap:16px;">
+        
         <div class="form-group">
           <label class="form-label">Matric number</label>
-          <input class="form-input" type="text" id="login-id" placeholder="e.g. PHA/24/25/0001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <input 
+            class="form-input"
+            type="text"
+            id="login-id"
+            placeholder="e.g. PHA/24/25/0001"
+            autocomplete="username"
+            onkeydown="if(event.key==='Enter')doLogin()"
+          />
         </div>
+
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input class="form-input" type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
-          <span class="form-error" id="login-err">Incorrect credentials. Please try again.</span>
+          <input 
+            class="form-input"
+            type="password"
+            id="login-pass"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()"
+          />
+
+          <span class="form-error" id="login-err">
+            Incorrect credentials. Please try again.
+          </span>
+
+          <span id="login-status" style="display:none;font-size:12px;color:var(--muted);margin-top:4px;">
+            Signing in…
+          </span>
         </div>
-        <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="doLogin()">Sign in</button>
+
+        <button 
+          class="btn btn-primary btn-full btn-lg"
+          id="login-btn"
+          onclick="doLogin()"
+        >
+          Sign in
+        </button>
       </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:1.25rem;text-align:center;line-height:1.6;">No account? Contact your lecturer to get access.</p>
+
+      <!-- FOOTNOTE -->
+      <p style="font-size:12px;color:var(--muted);margin-top:1.25rem;text-align:center;line-height:1.6;">
+        No account? Contact your lecturer to get access.
+      </p>
+
     </div>
   </div>
 </div>
@@ -207,6 +295,8 @@
       <div class="subject-card" onclick="openSubject('pch')"><div class="subject-icon">🔬</div><div class="subject-title">PCH 202</div><div class="subject-meta">Pharm. Chemistry · Acids & Bases</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pch-badge">Pending</span></div></div>
       <div class="subject-card" onclick="openSubject('pcg')"><div class="subject-icon">🌿</div><div class="subject-title">PCG 202</div><div class="subject-meta">Pharmacognosy · Natural products</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pcg-badge">Pending</span></div></div>
       <div class="subject-card" onclick="openSubject('pct')"><div class="subject-icon">📦</div><div class="subject-title">PCT 202</div><div class="subject-meta">Pharmaceutics · 5 handouts · 50q each</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pct-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('excl')"><div class="subject-icon">⚖️</div><div class="subject-title">EXCL 301</div><div class="subject-meta">Principles of Common Law · 50 questions</div><div style="margin-top:10px;"><span class="badge badge-warn" id="excl-badge">Pending</span></div></div>
+      <div class="subject-card" onclick="openSubject('pfa')"><div class="subject-icon">💰</div><div class="subject-title">PFA 301</div><div class="subject-meta">Public Financial Administration · 50 questions</div><div style="margin-top:10px;"><span class="badge badge-warn" id="pfa-badge">Pending</span></div></div>
     </div>
     <div style="margin-top:2rem;">
       <h2 style="font-size:17px;font-weight:600;margin-bottom:1rem;">My quiz history</h2>
@@ -498,6 +588,10 @@ const LOCAL_STUDENTS = {
 // Google Sheets IDs (fill in after creating sheets)
 const STUDENTS_SHEET_ID = '1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I';
 const RESULTS_SHEET_ID  = '1bBbU_x6S1KEpnRXQNKBpTD2zVRh2JGUDKLt0bvWL77I';
+
+// Anthropic API key for AI marking (get from https://console.anthropic.com)
+// IMPORTANT: Replace 'sk-...' with your actual API key
+const ANTHROPIC_API_KEY = 'sk-ant-v1-INSERT_YOUR_API_KEY_HERE';
 
 function getLocalStudents(){
   return JSON.parse(localStorage.getItem(LOCAL_STUDENTS_KEY) || '[]');
@@ -1067,13 +1161,17 @@ async function doLogin(){
   const id   = document.getElementById('login-id').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value.trim().toLowerCase();
   const err  = document.getElementById('login-err');
+  const statusEl = document.getElementById('login-status');
   const btn  = document.getElementById('login-btn');
   err.style.display='none';
+  statusEl.style.display='block';
+  statusEl.textContent = loginMode === 'admin' ? 'Signing in as admin…' : 'Signing in…';
   btn.innerHTML='<div class="loader"></div> Signing in…';
   btn.disabled=true;
 
   // Admin check
   if(id===ADMIN_ID && pass===ADMIN_PASS){
+    statusEl.style.display='none';
     btn.innerHTML='Sign in'; btn.disabled=false;
     initAdminSheetLinks();
     await loadStudents();
@@ -1105,6 +1203,7 @@ async function doLogin(){
   }
 
   if(student){
+    statusEl.style.display='none';
     currentStudent = student;
     const first = currentStudent.name.split(' ')[0];
     document.getElementById('s-name').textContent = first;
@@ -1112,6 +1211,7 @@ async function doLogin(){
     await refreshStats();
     show('student');
   } else {
+    statusEl.style.display='none';
     err.style.display='block';
   }
 
